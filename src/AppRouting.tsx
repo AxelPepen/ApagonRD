@@ -16,7 +16,7 @@ export const AppRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LandingSite />} />
-            <Route path="/auth/change-password" element={<ChangePasswordPage />} />
+            <Route path="/auth/recover" element={<ChangePasswordPage />} />
 
 
             <Route path="/app/*" element={<MainLayout/>}>

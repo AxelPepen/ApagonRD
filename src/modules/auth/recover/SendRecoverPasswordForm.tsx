@@ -53,12 +53,6 @@ export const SendRecoverSchema = () => {
             ) : (
                 <Form className="card-body flex flex-col gap-5 p-10" name="Recover Form"
                       submit={handleSubmit(doRecover)}>
-                    <div className="text-center mb-5">
-                        <h3 className="text-lg font-medium text-gray-900">
-                            Recuperar contraseña
-                        </h3>
-                    </div>
-
                     {/* Solo el campo de usuario */}
                     <div className="flex flex-col">
                         <Input

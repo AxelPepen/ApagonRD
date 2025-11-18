@@ -11,7 +11,6 @@ export const MainNavbar = () => {
 
     const navItems = [
         { path: '/app/inicio', label: 'Inicio', icon: 'fa-home' },
-        { path: '/app/mapa', label: 'Mapa', icon: 'fa-map' },
         { path: '/app/reportar', label: 'Reportar', icon: 'fa-plus-circle' },
         { path: '/app/mis-reportes', label: 'Mis reportes', icon: 'fa-list' },
     ];

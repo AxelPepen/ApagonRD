@@ -86,15 +86,52 @@ export class AuthService extends BaseService {
 
     async validateRecoveryToken(token: string): Promise<ResultResponse<boolean>> {
         // Validate token - returns ResultResponse<boolean> indicating if token is active
+        // No Auth required for this endpoint
         const url: string = `${this.getBaseURL()}account/recover/validate?token=${token}`;
-        return this.getFullURL<ResultResponse<boolean>>(url);
+        const response: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            const text: string = await response.text();
+            const payload: object = JSON.parse(text);
+            return Promise.reject(payload);
+        }
+        
+        try {
+            return await response.json() as ResultResponse<boolean>;
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
 
     async changePassword(data: RecoverPassword): Promise<void> {
         // Recover password - receives password, repeated, token
         // Validates passwords match, marks token as consumed, and updates password
-        const url: string = `${this.getBaseURL()}account/recover/change`;
-        await this.postFullURL<void>(url, data);
+        // No Auth required for this endpoint
+        const url: string = `${this.getBaseURL()}account/recover`;
+        const response: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            const text: string = await response.text();
+            const payload: object = JSON.parse(text);
+            return Promise.reject(payload);
+        }
+        
+        try {
+            return await response.json() as void;
+        } catch (e) {
+            return;
+        }
     }
 
     private getBaseURL(): string {

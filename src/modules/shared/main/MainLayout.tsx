@@ -10,10 +10,10 @@ export const MainLayout = () => {
         return <LoadingPage/>
     } else if (authenticated) {
         return (
-            <div className="flex flex-col grow">
+            <div className="flex flex-col h-screen overflow-hidden">
                 <MainNavbar/>
-                <main className="grow content pt-20" id="content" role="content">
-                    <div className="wrapper flex grow flex-col">
+                <main className="flex-1 content pt-20 overflow-hidden" id="content" role="content">
+                    <div className="wrapper flex h-full flex-col overflow-hidden">
                         <Outlet/>
                     </div>
                 </main>
