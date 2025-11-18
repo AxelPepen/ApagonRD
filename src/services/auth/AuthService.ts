@@ -1,9 +1,10 @@
 import {BaseService} from "../BaseService.ts";
-import {KeyValue} from "../../domain/types/steoreotype.ts";
+import {KeyValue, ResultResponse} from "../../domain/types/steoreotype.ts";
 import {StorageItem} from "../../domain/types/StorageItem.ts";
 import {AuthToken, TokenInfo, TokenResponse} from "../../domain/model/auth/Token.ts";
 import {User} from "../../domain/model/user/user.ts";
 import {CreateUser} from "../../domain/model/user/CreateUser.ts";
+import {RecoverPassword, SendRecoverRequest} from "../../domain/model/account/RecoverPassword.ts";
 import {environment} from "../../environment/environment.ts";
 import {isNil} from "lodash";
 
@@ -77,25 +78,23 @@ export class AuthService extends BaseService {
         }
     }
 
-    async recoverPassword(data: any): Promise<void> {
-        // Use full URL path for account endpoints
-        const url: string = `${this.getBaseURL()}account/recover`;
-        await this.postFullURL<void>(url, data);
-    }
-
-    async changePassword(data: any): Promise<void> {
-        const url: string = `${this.getBaseURL()}account/recover/change`;
-        await this.postFullURL<void>(url, data);
-    }
-
-    async sendRecoveryCode(data: any = {}): Promise<void> {
+    async sendRecoveryCode(data: SendRecoverRequest): Promise<void> {
+        // Send recover password - receives username, generates token and sends email
         const url: string = `${this.getBaseURL()}account/recover/send`;
         await this.postFullURL<void>(url, data);
     }
 
-    async validateRecoveryToken(token: string): Promise<void> {
+    async validateRecoveryToken(token: string): Promise<ResultResponse<boolean>> {
+        // Validate token - returns ResultResponse<boolean> indicating if token is active
         const url: string = `${this.getBaseURL()}account/recover/validate?token=${token}`;
-        await this.getFullURL<void>(url);
+        return this.getFullURL<ResultResponse<boolean>>(url);
+    }
+
+    async changePassword(data: RecoverPassword): Promise<void> {
+        // Recover password - receives password, repeated, token
+        // Validates passwords match, marks token as consumed, and updates password
+        const url: string = `${this.getBaseURL()}account/recover/change`;
+        await this.postFullURL<void>(url, data);
     }
 
     private getBaseURL(): string {

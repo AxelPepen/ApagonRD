@@ -23,7 +23,7 @@ export const SendRecoverSchema = () => {
 
     const doRecover = (params: SendRecoverRequest) => {
         localStorage.removeItem('token_info');
-        authService.recoverPassword(params)
+        authService.sendRecoveryCode(params)
             .then(() => {
                 toast.success("Correo de recuperación enviado correctamente.");
                 setSuccess(true);

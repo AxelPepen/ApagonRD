@@ -1,4 +1,4 @@
-import {mixed, object, ObjectSchema, string} from "yup";
+import {mixed, object, ObjectSchema, ref, string} from "yup";
 import {UserPasswordLogin} from "../domain/model/auth/Login.ts";
 import {Messages} from "../domain/types/Messages.ts";
 import {RecoverPassword, SendRecoverRequest} from "../domain/model/account/RecoverPassword.ts";
@@ -14,10 +14,15 @@ export const LoginSchema: ObjectSchema<UserPasswordLogin> = object().shape({
 
 export const RecoverSchema: ObjectSchema<RecoverPassword> = object().shape({
     token: string().required(Messages.RequiredField),
-    password: string().required(Messages.RequiredField),
-    repeated: string().required(Messages.RequiredField),
-    }
-)
+    password: string()
+        .required(Messages.RequiredField)
+        .min(8, 'La contraseña debe tener al menos 8 caracteres')
+        .matches(/[0-9]/, 'La contraseña debe contener al menos un número')
+        .matches(/[A-Z]/, 'La contraseña debe contener al menos una letra mayúscula'),
+    repeated: string()
+        .required(Messages.RequiredField)
+        .oneOf([ref('password')], 'Las contraseñas deben coincidir'),
+})
 
 export const SendRecoverPasswordSchema: ObjectSchema<SendRecoverRequest> = object().shape({
         username: string().required(Messages.RequiredField),

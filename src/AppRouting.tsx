@@ -10,11 +10,14 @@ import {HomePage} from "./modules/home/HomePage.tsx";
 import {MapaPage} from "./modules/Map/MapaPage.tsx";
 import {ReportarPage} from "./modules/ReportSector/ReportarPage.tsx";
 import {MisReportesPage} from "./modules/Reports/MisReportesPage.tsx";
+import {ChangePasswordPage} from "./modules/auth/recover/ChangePasswordPage.tsx";
 
 export const AppRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LandingSite />} />
+            <Route path="/auth/change-password" element={<ChangePasswordPage />} />
+
 
             <Route path="/app/*" element={<MainLayout/>}>
                 <Route index element={<Navigate to="inicio" replace/>}/>
