@@ -7,7 +7,6 @@ import {Error403} from "./modules/errors/components/Error403.tsx";
 import {MainLayout} from "./modules/shared/main/MainLayout.tsx";
 import {LandingSite} from "./modules/landingSite/LandingSite.tsx";
 import {HomePage} from "./modules/home/HomePage.tsx";
-import {MapaPage} from "./modules/Map/MapaPage.tsx";
 import {ReportarPage} from "./modules/ReportSector/ReportarPage.tsx";
 import {MisReportesPage} from "./modules/Reports/MisReportesPage.tsx";
 import {ChangePasswordPage} from "./modules/auth/recover/ChangePasswordPage.tsx";
@@ -22,7 +21,6 @@ export const AppRouting = () => {
             <Route path="/app/*" element={<MainLayout/>}>
                 <Route index element={<Navigate to="inicio" replace/>}/>
                 <Route path="inicio" element={<HomePage/>}/>
-                <Route path="mapa" element={<MapaPage/>}/>
                 <Route path="reportar" element={<ReportarPage/>}/>
                 <Route path="mis-reportes" element={<MisReportesPage/>}/>
             </Route>

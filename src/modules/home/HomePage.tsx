@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {SectorService} from "../../services/sector/SectorService.ts";
-import {Sector, CurrentSector, GeoJSONPolygon} from "../../domain/model/sector/Sector.ts";
+import {Sector, GeoJSONPolygon} from "../../domain/model/sector/Sector.ts";
 import {toast} from "react-toastify";
 
 // Fix para los iconos de Leaflet
@@ -30,7 +30,7 @@ function MapUpdater({center}: {center: [number, number]}) {
 export const HomePage = () => {
     const navigate = useNavigate();
     const [sectors, setSectors] = useState<Sector[]>([]);
-    const [, setCurrentSector] = useState<CurrentSector | null>(null);
+    const [_currentSector, setCurrentSector] = useState<Sector | null>(null);
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
     const [loading, setLoading] = useState(true);
     const mapRef = useRef<L.Map | null>(null);
@@ -47,14 +47,8 @@ export const HomePage = () => {
                     // Determinar el sector actual del usuario (solo una vez)
                     SectorService.instance.getCurrentSector(lat, lon)
                         .then((sector) => {
-                            if (sector && sector.sectorName) {
-                                setCurrentSector(sector);
-                            }
-                        })
-                        .catch((err) => {
-                            console.error("Error obteniendo sector actual:", err);
-                        });
-                },
+                            if (sector) setCurrentSector(sector);
+                        })},
                 (error) => {
                     console.error("Error obteniendo ubicación:", error);
                 }
