@@ -45,8 +45,12 @@ export class FileService {
 
         try {
             const result = await response.json();
-            // Asumiendo que el endpoint devuelve { url: "..." } o directamente la URL
-            return result.url || result.photoUrl || result;
+            // El endpoint devuelve un objeto con la propiedad 'uri' que contiene la URL de la imagen
+            if (result.uri) {
+                return result.uri;
+            }
+            // Fallback por si acaso el formato cambia
+            return result.url || result.photoUrl || (typeof result === 'string' ? result : '');
         } catch (e) {
             return Promise.reject(e);
         }

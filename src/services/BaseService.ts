@@ -102,7 +102,18 @@ export abstract class BaseService<R = unknown> {
     private async handleResponse<T>(res: Response): Promise<T> {
         if (!res.ok) {
             const text: string = await res.text();
-            const payload: object = await JSON.parse(text);
+            let payload: object;
+            try {
+                payload = JSON.parse(text);
+            } catch (e) {
+                // Si no es JSON válido, crear un objeto de error con el texto
+                payload = {
+                    status: res.status,
+                    error: res.statusText,
+                    message: text || res.statusText,
+                    path: res.url
+                };
+            }
             return Promise.reject(payload);
         }
         try {

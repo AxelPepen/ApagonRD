@@ -1,3 +1,6 @@
+import {User} from "../user/user.ts";
+import {Sector} from "../sector/Sector.ts";
+
 export interface CreateReport {
     latitude: number;
     longitude: number;
@@ -19,6 +22,9 @@ export interface Report {
     description: string;
     status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED";
     photoUrl?: string;
+    user?: User;
+    sector?: Sector;
 }
+
 
 

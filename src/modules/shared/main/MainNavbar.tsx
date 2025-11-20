@@ -65,7 +65,16 @@ export const MainNavbar = () => {
                                 </div>
                             <div className="menu-dropdown menu-default light:border-gray-300 w-screen max-w-[250px]">
                                 <div className="flex flex-col py-2">
-                                        <div className="menu-item" data-menu-dismiss="true">
+                                    {/* User Name */}
+                                    {current && (
+                                        <div className="px-4 py-3 border-b border-gray-200">
+                                            <p className="font-bold text-gray-900 text-sm">
+                                                {current.info?.name || current.username || 'Usuario'}
+                                            </p>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="menu-item" data-menu-dismiss="true">
                                         <button className="menu-link w-full text-left">
                                                 <span className="menu-icon">
                                                 <i className="fa fa-user-edit fa-fw"></i>

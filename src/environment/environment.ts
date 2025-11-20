@@ -3,5 +3,5 @@ export type EnvironmentProperty = {
 }
 
 export const environment: EnvironmentProperty = {
-    apiURL: 'http://3.142.230.203:8020/api/v1/',
+    apiURL: 'https://api.apagon-rd.resqpet.online/api/v1/',
 }

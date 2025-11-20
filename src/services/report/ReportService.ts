@@ -15,6 +15,12 @@ export class ReportService extends BaseService {
     async createReport(data: CreateReport): Promise<Report> {
         return this.post<Report>('', data);
     }
+
+    async getUserReports(): Promise<Report[]> {
+        const page = await this.getAll({}, {page: 0, size: 1000});
+        return page.content as Report[];
+    }
 }
+
 
 

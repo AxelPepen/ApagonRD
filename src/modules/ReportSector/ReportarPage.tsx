@@ -124,22 +124,39 @@ export const ReportarPage = () => {
                 }
             }
 
-            // Crear reporte
+            // Crear reporte - limpiar campos undefined
             const reportData: CreateReport = {
-                ...data,
                 latitude,
                 longitude,
                 sectorId: currentSector.id,
+                outageType: data.outageType,
+                description: data.description,
                 status: "RECEIVED",
-                photoUrl
+                ...(photoUrl && { photoUrl }) // Solo incluir photoUrl si existe
             };
 
+            console.log("Enviando reporte con datos:", reportData);
             await ReportService.instance.createReport(reportData);
             toast.success("Reporte creado exitosamente");
             navigate('/app/inicio');
         } catch (error: any) {
             console.error("Error creando reporte:", error);
-            const errorMessage = error?.message || "Error al crear el reporte. Por favor intenta nuevamente.";
+            console.error("Detalles del error:", JSON.stringify(error, null, 2));
+            
+            // Mejorar el manejo de errores para mostrar más detalles
+            let errorMessage = "Error al crear el reporte. Por favor intenta nuevamente.";
+            
+            if (error?.message) {
+                errorMessage = error.message;
+            } else if (error?.error) {
+                errorMessage = typeof error.error === 'string' ? error.error : error.error.message || errorMessage;
+            } else if (error?.status === 400) {
+                errorMessage = "Error de validación. Por favor verifica que todos los campos estén correctos.";
+                if (error?.message) {
+                    errorMessage += ` ${error.message}`;
+                }
+            }
+            
             toast.error(errorMessage);
         } finally {
             setLoading(false);
@@ -158,7 +175,12 @@ export const ReportarPage = () => {
     }
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
+        <div className="p-6 max-w-2xl mx-auto overflow-y-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+            <style>{`
+                div::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Reportar Apagón</h1>
 
             {currentSector && (
