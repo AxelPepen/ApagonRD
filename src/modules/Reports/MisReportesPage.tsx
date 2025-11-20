@@ -4,6 +4,8 @@ import {Report} from "../../domain/model/report/Report.ts";
 import {toast} from "react-toastify";
 import {useAuthContext} from "../../contexts/AuthContext.tsx";
 import {ReportDetailModal} from "./ReportDetailModal.tsx";
+import {Pager} from "../../components/shared/Pager.tsx";
+import {Page, Pageable} from "../../domain/filters/Page.ts";
 
 
 export const MisReportesPage = () => {
@@ -12,7 +14,7 @@ export const MisReportesPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedReport, setSelectedReport] = useState<Report | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [pageData, setPageData] = useState<Page<Report>>({content: []});
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -34,12 +36,36 @@ export const MisReportesPage = () => {
                 });
             
             setReports(userReports);
+            updatePageData(userReports, 0);
         } catch (error: any) {
             console.error("Error cargando reportes:", error);
             toast.error("Error al cargar los reportes. Por favor intenta nuevamente.");
         } finally {
             setLoading(false);
         }
+    };
+
+    const updatePageData = (allReports: Report[], pageNumber: number) => {
+        const startIndex = pageNumber * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const content = allReports.slice(startIndex, endIndex);
+        const totalElements = allReports.length;
+        const totalPages = Math.ceil(totalElements / itemsPerPage);
+
+        const pageable = new Pageable();
+        pageable.number = pageNumber;
+        pageable.size = itemsPerPage;
+        pageable.totalElements = totalElements;
+        pageable.totalPages = totalPages;
+
+        setPageData({
+            content,
+            page: pageable
+        });
+    };
+
+    const handlePageChange = (pageNumber: number) => {
+        updatePageData(reports, pageNumber);
     };
 
     const formatDate = (dateString: string) => {
@@ -69,17 +95,6 @@ export const MisReportesPage = () => {
         setSelectedReport(null);
     };
 
-    // Calcular paginación
-    const totalPages = Math.ceil(reports.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentReports = reports.slice(startIndex, endIndex);
-
-    const goToPage = (page: number) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
-        }
-    };
 
     if (loading) {
         return (
@@ -117,7 +132,7 @@ export const MisReportesPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {currentReports.map((report) => (
+                                    {pageData.content.map((report) => (
                                         <tr key={report.id} className="hover:bg-gray-50">
                                             <td className="py-3 px-4 text-center">{formatDate(report.createdAt)}</td>
                                             <td className="py-3 px-4 text-center">{formatTime(report.createdAt)}</td>
@@ -138,57 +153,7 @@ export const MisReportesPage = () => {
                                 <tfoot>
                                     <tr>
                                         <td colSpan={5} className="py-4 px-4">
-                                            <div className="flex items-center justify-between">
-                                                <div className="text-sm text-gray-600">
-                                                    Mostrando {startIndex + 1} - {Math.min(endIndex, reports.length)} de {reports.length} reportes
-                                                </div>
-                                                {totalPages > 1 && (
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => goToPage(currentPage - 1)}
-                                                            disabled={currentPage === 1}
-                                                            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        >
-                                                            <i className="fas fa-chevron-left"></i>
-                                                        </button>
-                                                        
-                                                        <div className="flex items-center gap-1">
-                                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                                                                if (
-                                                                    page === 1 ||
-                                                                    page === totalPages ||
-                                                                    (page >= currentPage - 1 && page <= currentPage + 1)
-                                                                ) {
-                                                                    return (
-                                                                        <button
-                                                                            key={page}
-                                                                            onClick={() => goToPage(page)}
-                                                                            className={`px-3 py-2 rounded-lg border ${
-                                                                                currentPage === page
-                                                                                    ? 'bg-blue-600 text-white border-blue-600'
-                                                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                                                            }`}
-                                                                        >
-                                                                            {page}
-                                                                        </button>
-                                                                    );
-                                                                } else if (page === currentPage - 2 || page === currentPage + 2) {
-                                                                    return <span key={page} className="px-2">...</span>;
-                                                                }
-                                                                return null;
-                                                            })}
-                                                        </div>
-
-                                                        <button
-                                                            onClick={() => goToPage(currentPage + 1)}
-                                                            disabled={currentPage === totalPages}
-                                                            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        >
-                                                            <i className="fas fa-chevron-right"></i>
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
+                                            <Pager page={pageData} onChange={handlePageChange} />
                                         </td>
                                     </tr>
                                 </tfoot>
