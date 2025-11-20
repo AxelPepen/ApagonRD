@@ -96,9 +96,9 @@ export const HomePage = () => {
         return [];
     };
 
-    // Obtener color según el estado del sector (colores más claros)
+    // Obtener color según el estado del sector (colores más fuertes)
     const getSectorColor = (status: string): string => {
-        return status === "POWER" ? '#86efac' : '#fca5a5'; // Verde claro si tiene electricidad (POWER), rojo claro si no
+        return status === "POWER" ? '#22c55e' : '#ef4444'; // Verde más fuerte si tiene electricidad (POWER), rojo más fuerte si no
     };
 
     if (loading) {
@@ -166,7 +166,7 @@ export const HomePage = () => {
                             pathOptions={{
                                 color: '#000000', // Borde negro
                                 fillColor: fillColor,
-                                fillOpacity: 0.3, // Más transparente
+                                fillOpacity: 0.6, // Más opaco para colores más fuertes
                                 weight: 3, // Borde más grueso
                                 opacity: 1
                             }}
@@ -174,7 +174,7 @@ export const HomePage = () => {
                                 mouseover: (e) => {
                                     const layer = e.target;
                                     layer.setStyle({
-                                        fillOpacity: 0.5,
+                                        fillOpacity: 0.8,
                                         weight: 4,
                                         color: '#000000'
                                     });
@@ -182,7 +182,7 @@ export const HomePage = () => {
                                 mouseout: (e) => {
                                     const layer = e.target;
                                     layer.setStyle({
-                                        fillOpacity: 0.3,
+                                        fillOpacity: 0.6,
                                         weight: 3,
                                         color: '#000000'
                                     });

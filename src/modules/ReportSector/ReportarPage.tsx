@@ -25,6 +25,8 @@ export const ReportarPage = () => {
     const [loading, setLoading] = useState(false);
     const [loadingLocation, setLoadingLocation] = useState(true);
     const [currentSector, setCurrentSector] = useState<Sector | null>(null);
+    const [allSectors, setAllSectors] = useState<Sector[]>([]);
+    const [showSectorSelector, setShowSectorSelector] = useState(false);
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -35,6 +37,17 @@ export const ReportarPage = () => {
             status: "RECEIVED"
         }
     });
+
+    // Cargar todos los sectores para el selector manual
+    useEffect(() => {
+        SectorService.instance.getAllSectors()
+            .then((sectors) => {
+                setAllSectors(Array.isArray(sectors) ? sectors : []);
+            })
+            .catch((err) => {
+                console.error("Error cargando sectores:", err);
+            });
+    }, []);
 
     // Obtener ubicación y sector del usuario
     useEffect(() => {
@@ -52,21 +65,25 @@ export const ReportarPage = () => {
                         const sector = await SectorService.instance.getCurrentSector(lat, lon);
                         setCurrentSector(sector);
                         setValue('sectorId', sector.id);
+                        setShowSectorSelector(false);
                         setLoadingLocation(false);
                     } catch (err) {
                         console.error("Error obteniendo sector:", err);
-                        toast.error("No se pudo determinar tu sector. Por favor intenta nuevamente.");
+                        toast.warning("No se pudo determinar tu sector automáticamente. Por favor selecciona uno manualmente.");
+                        setShowSectorSelector(true);
                         setLoadingLocation(false);
                     }
                 },
                 (error) => {
                     console.error("Error obteniendo ubicación:", error);
-                    toast.error("No se pudo obtener tu ubicación. Por favor habilita el acceso a la ubicación.");
+                    toast.warning("No se pudo obtener tu ubicación. Por favor selecciona un sector manualmente.");
+                    setShowSectorSelector(true);
                     setLoadingLocation(false);
                 }
             );
         } else {
-            toast.error("Tu navegador no soporta geolocalización.");
+            toast.warning("Tu navegador no soporta geolocalización. Por favor selecciona un sector manualmente.");
+            setShowSectorSelector(true);
             setLoadingLocation(false);
         }
     }, [setValue]);
@@ -103,64 +120,58 @@ export const ReportarPage = () => {
             toast.error("No se pudo obtener tu ubicación. Por favor recarga la página.");
             return;
         }
-
         if (!currentSector) {
-            toast.error("No se pudo determinar tu sector. Por favor recarga la página.");
+            toast.error("Por favor selecciona un sector.");
             return;
         }
-
         setLoading(true);
-        try {
-            let photoUrl: string | undefined;
 
-            // Subir foto si existe
-            if (photoFile) {
-                try {
-                    photoUrl = await FileService.instance.uploadFile(photoFile);
+        let photoUrl: string | undefined;
+
+        const uploadPromise = photoFile
+            ? FileService.instance.uploadFile(photoFile).then(
+                (url) => {photoUrl = url;
                     toast.success("Foto subida correctamente");
-                } catch (err) {
-                    console.error("Error subiendo foto:", err);
+                }, (err) => {console.error("Error subiendo foto:", err);
                     toast.error("Error subiendo la foto. El reporte se creará sin foto.");
-                }
-            }
+                }) : Promise.resolve();
 
-            // Crear reporte - limpiar campos undefined
-            const reportData: CreateReport = {
-                latitude,
-                longitude,
-                sectorId: currentSector.id,
-                outageType: data.outageType,
-                description: data.description,
-                status: "RECEIVED",
-                ...(photoUrl && { photoUrl }) // Solo incluir photoUrl si existe
-            };
+        uploadPromise.then(() => {
+                const reportData: CreateReport = {
+                    latitude,
+                    longitude,
+                    sectorId: currentSector.id,
+                    outageType: data.outageType,
+                    description: data.description,
+                    status: "RECEIVED",
+                    ...(photoUrl && { photoUrl })
+                };
 
-            console.log("Enviando reporte con datos:", reportData);
-            await ReportService.instance.createReport(reportData);
-            toast.success("Reporte creado exitosamente");
-            navigate('/app/inicio');
-        } catch (error: any) {
-            console.error("Error creando reporte:", error);
-            console.error("Detalles del error:", JSON.stringify(error, null, 2));
-            
-            // Mejorar el manejo de errores para mostrar más detalles
-            let errorMessage = "Error al crear el reporte. Por favor intenta nuevamente.";
-            
-            if (error?.message) {
-                errorMessage = error.message;
-            } else if (error?.error) {
-                errorMessage = typeof error.error === 'string' ? error.error : error.error.message || errorMessage;
-            } else if (error?.status === 400) {
-                errorMessage = "Error de validación. Por favor verifica que todos los campos estén correctos.";
-                if (error?.message) {
-                    errorMessage += ` ${error.message}`;
-                }
-            }
-            
-            toast.error(errorMessage);
-        } finally {
-            setLoading(false);
-        }
+                return ReportService.instance.createReport(reportData).then(() => {
+                        toast.success("Reporte creado exitosamente");
+                        navigate('/app/inicio');
+                    }, (error: any) => {
+                        let errorMessage = "Error al crear el reporte. Por favor intenta nuevamente.";
+                        if (error?.message) {
+                            errorMessage = error.message;
+                        } else if (error?.error) {
+                            errorMessage = typeof error.error === 'string'
+                                ? error.error
+                                : error.error.message || errorMessage;
+                        } else if (error?.status === 400) {
+                            errorMessage = "Error de validación. Por favor verifica que todos los campos estén correctos.";
+                            if (error?.message) {
+                                errorMessage += ` ${error.message}`;
+                            }
+                        }
+                        toast.error(errorMessage);
+                    }
+                );
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+
     };
 
     if (loadingLocation) {
@@ -176,14 +187,10 @@ export const ReportarPage = () => {
 
     return (
         <div className="p-6 max-w-2xl mx-auto overflow-y-auto" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-            <style>{`
-                div::-webkit-scrollbar {
-                    display: none;
-                }
-            `}</style>
+            <style>{`div::-webkit-scrollbar {display: none;}`}</style>
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Reportar Apagón</h1>
 
-            {currentSector && (
+            {currentSector && !showSectorSelector && (
                 <div className="mb-4 p-4 bg-blue-50 rounded-lg">
                     <p className="text-sm text-gray-700">
                         <strong>Sector detectado:</strong> {currentSector.name}
@@ -191,28 +198,30 @@ export const ReportarPage = () => {
                 </div>
             )}
 
-            <Form
-                name="Report Form"
-                submit={handleSubmit(onSubmit)}
-                className="space-y-4"
-            >
+            <Form name="Report Form" submit={handleSubmit(onSubmit)} className="space-y-4">
+                {showSectorSelector ? (
+                        <div>
+                            <Select label="Sector"{...register('sectorId', {required: 'Por favor selecciona un sector', onChange: (e) => {
+                                        const sectorId = parseInt(e.target.value);
+                                        const selectedSector = allSectors.find(s => s.id === sectorId);
+                                        if (selectedSector) {
+                                            setCurrentSector(selectedSector);
+                                            setValue('sectorId', sectorId, { shouldValidate: true });
+                                        }}})}
+                                options={allSectors.map(sector => ({
+                                    value: sector.id.toString(),
+                                    description: sector.name
+                                }))}
+                                error={errors.sectorId?.message}
+                            />
+                        </div>) : (<></>)}
                 <div>
-                    <Select
-                        label="Tipo de apagón"
-                        {...register('outageType', {required: 'Este campo es requerido'})}
-                        options={outageTypeOptions}
-                        error={errors.outageType?.message}
-                    />
+                    <Select label="Tipo de apagón"{...register('outageType', {required: 'Este campo es requerido'})} options={outageTypeOptions} error={errors.outageType?.message}/>
                 </div>
 
                 <div>
                     <label className="form-label text-md mb-1 block">Descripción</label>
-                    <textarea
-                        {...register('description', {required: 'Este campo es requerido'})}
-                        className="textarea bg-transparent w-full"
-                        rows={4}
-                        placeholder="Describe el problema en detalle..."
-                    />
+                    <textarea{...register('description', {required: 'Este campo es requerido'})} className="textarea bg-transparent w-full" rows={4} placeholder="Describe el problema en detalle..."/>
                     {errors.description && (
                         <p className="text-red-500 text-xs mt-1">
                             <i className="fa fa-warning mr-1"/>
@@ -225,32 +234,15 @@ export const ReportarPage = () => {
                     <label className="form-label text-md mb-1 block">Foto (opcional)</label>
                     {photoPreview ? (
                         <div className="relative">
-                            <img
-                                src={photoPreview}
-                                alt="Preview"
-                                className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={removePhoto}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600"
-                            >
+                            <img src={photoPreview} alt="Preview" className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-300"/>
+                            <button type="button" onClick={removePhoto} className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600">
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
                     ) : (
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handlePhotoChange}
-                                className="hidden"
-                                id="photo-input"
-                            />
-                            <label
-                                htmlFor="photo-input"
-                                className="cursor-pointer flex flex-col items-center gap-2"
-                            >
+                            <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" id="photo-input"/>
+                            <label htmlFor="photo-input" className="cursor-pointer flex flex-col items-center gap-2">
                                 <i className="fas fa-camera text-3xl text-gray-400"></i>
                                 <span className="text-sm text-gray-600">
                                     Haz clic para seleccionar una foto
@@ -261,30 +253,10 @@ export const ReportarPage = () => {
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/app/inicio')}
-                        className="btn btn-light flex-1"
-                        disabled={loading}
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        className="btn btn-primary flex-1"
-                        disabled={loading || !currentSector}
-                    >
-                        {loading ? (
-                            <>
-                                <i className="fa fa-spin fa-spinner mr-2"></i>
-                                Enviando...
-                            </>
-                        ) : (
-                            <>
-                                <i className="fas fa-paper-plane mr-2"></i>
-                                Enviar Reporte
-                            </>
-                        )}
+                    <button type="button" onClick={() => navigate('/app/inicio')} className="btn btn-light flex-1" disabled={loading}>Cancelar</button>
+                    <button type="submit" className="btn btn-primary flex-1" disabled={loading}>{loading ? (
+                            <><i className="fa fa-spin fa-spinner mr-2"></i>Enviando...</>) : (
+                            <><i className="fas fa-paper-plane mr-2"></i>Enviar Reporte</>)}
                     </button>
                 </div>
             </Form>
