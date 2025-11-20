@@ -11,13 +11,9 @@ import {CreateReport} from "../../domain/model/report/Report.ts";
 import {Sector} from "../../domain/model/sector/Sector.ts";
 import {SelectOption} from "../../domain/types/steoreotype.ts";
 
-const outageTypeOptions: SelectOption[] = [
-    {value: "General outage", description: "Apagón general"},
-    {value: "Partial outage", description: "Apagón parcial"},
-    {value: "Voltage fluctuation", description: "Fluctuación de voltaje"},
-    {value: "Power line down", description: "Línea eléctrica caída"},
-    {value: "Transformer failure", description: "Falla de transformador"},
-    {value: "Other", description: "Otro"}
+const powerStatusOptions: SelectOption[] = [
+    {value: "POWER", description: "Tiene energía"},
+    {value: "NO_POWER", description: "Sin energía"}
 ];
 
 export const ReportarPage = () => {
@@ -34,7 +30,8 @@ export const ReportarPage = () => {
 
     const {register, handleSubmit, formState: {errors}, setValue} = useForm<CreateReport>({
         defaultValues: {
-            status: "RECEIVED"
+            status: "RECEIVED",
+            powerStatus: "NO_POWER"
         }
     });
 
@@ -141,7 +138,7 @@ export const ReportarPage = () => {
                     latitude,
                     longitude,
                     sectorId: currentSector.id,
-                    outageType: data.outageType,
+                    powerStatus: data.powerStatus,
                     description: data.description,
                     status: "RECEIVED",
                     ...(photoUrl && { photoUrl })
@@ -216,7 +213,12 @@ export const ReportarPage = () => {
                             />
                         </div>) : (<></>)}
                 <div>
-                    <Select label="Tipo de apagón"{...register('outageType', {required: 'Este campo es requerido'})} options={outageTypeOptions} error={errors.outageType?.message}/>
+                    <Select
+                        label="Estado de energía"
+                        {...register('powerStatus', {required: 'Este campo es requerido'})}
+                        options={powerStatusOptions}
+                        error={errors.powerStatus?.message}
+                    />
                 </div>
 
                 <div>

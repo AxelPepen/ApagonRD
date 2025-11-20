@@ -1,12 +1,16 @@
 import {useEffect, useState} from "react";
 import {ReportService} from "../../services/report/ReportService.ts";
-import {Report} from "../../domain/model/report/Report.ts";
+import {Page, Pageable} from "../../domain/filters/Page.ts";
+import {PowerStatus, Report} from "../../domain/model/report/Report.ts";
 import {toast} from "react-toastify";
 import {useAuthContext} from "../../contexts/AuthContext.tsx";
 import {ReportDetailModal} from "./ReportDetailModal.tsx";
 import {Pager} from "../../components/shared/Pager.tsx";
-import {Page, Pageable} from "../../domain/filters/Page.ts";
 
+const powerStatusLabels: Record<PowerStatus, string> = {
+    POWER: "Tiene energía",
+    NO_POWER: "Sin energía",
+};
 
 export const MisReportesPage = () => {
     const {current} = useAuthContext();
@@ -108,7 +112,15 @@ export const MisReportesPage = () => {
     }
 
     return (
-        <div className="px-32 py-6">
+        <div
+            className="px-32 py-6 overflow-y-auto mis-reportes-scroll"
+            style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
+        >
+            <style>{`
+                .mis-reportes-scroll::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Mis Reportes</h1>
 
             {reports.length === 0 ? (
@@ -122,34 +134,36 @@ export const MisReportesPage = () => {
                         <div className="overflow-x-auto">
 
                         <table className="table w-full">
-                                <thead>
-                                    <tr>
-                                        <th className="text-center py-3 px-4">Fecha</th>
-                                        <th className="text-center py-3 px-4">Hora</th>
-                                        <th className="text-center py-3 px-4">Sector</th>
-                                        <th className="text-center py-3 px-4">Motivo</th>
-                                        <th className="text-center py-3 px-4">Acciones</th>
+                            <thead>
+                                <tr>
+                                    <th className="text-center py-3 px-4">Fecha</th>
+                                    <th className="text-center py-3 px-4">Hora</th>
+                                    <th className="text-center py-3 px-4">Sector</th>
+                                    <th className="text-center py-3 px-4">Estado de energía</th>
+                                    <th className="text-center py-3 px-4">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pageData.content.map((report) => (
+                                    <tr key={report.id} className="hover:bg-gray-50">
+                                        <td className="py-3 px-4 text-center">{formatDate(report.createdAt)}</td>
+                                        <td className="py-3 px-4 text-center">{formatTime(report.createdAt)}</td>
+                                        <td className="py-3 px-4 text-center">{report.sector?.name || 'N/A'}</td>
+                                        <td className="py-3 px-4 text-center">
+                                            {powerStatusLabels[report.powerStatus] || report.powerStatus}
+                                        </td>
+                                        <td className="py-3 px-4 text-center">
+                                            <button
+                                                onClick={() => openModal(report)}
+                                                className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors mx-auto"
+                                                title="Ver detalles"
+                                            >
+                                                <i className="fas fa-info text-sm"></i>
+                                            </button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {pageData.content.map((report) => (
-                                        <tr key={report.id} className="hover:bg-gray-50">
-                                            <td className="py-3 px-4 text-center">{formatDate(report.createdAt)}</td>
-                                            <td className="py-3 px-4 text-center">{formatTime(report.createdAt)}</td>
-                                            <td className="py-3 px-4 text-center">{report.sector?.name || 'N/A'}</td>
-                                            <td className="py-3 px-4 text-center">{report.outageType}</td>
-                                            <td className="py-3 px-4 text-center">
-                                                <button
-                                                    onClick={() => openModal(report)}
-                                                    className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors mx-auto"
-                                                    title="Ver detalles"
-                                                >
-                                                    <i className="fas fa-info text-sm"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
+                                ))}
+                            </tbody>
                                 <tfoot>
                                     <tr>
                                         <td colSpan={5} className="py-4 px-4">

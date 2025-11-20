@@ -1,11 +1,13 @@
 import {User} from "../user/user.ts";
 import {Sector} from "../sector/Sector.ts";
 
+export type PowerStatus = "POWER" | "NO_POWER";
+
 export interface CreateReport {
     latitude: number;
     longitude: number;
     sectorId: number;
-    outageType: string;
+    powerStatus: PowerStatus;
     description: string;
     status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED";
     photoUrl?: string;
@@ -18,7 +20,7 @@ export interface Report {
     latitude: number;
     longitude: number;
     sectorId: number;
-    outageType: string;
+    powerStatus: PowerStatus;
     description: string;
     status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED";
     photoUrl?: string;

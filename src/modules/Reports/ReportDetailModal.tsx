@@ -1,4 +1,9 @@
-import {Report} from "../../domain/model/report/Report.ts";
+import {PowerStatus, Report} from "../../domain/model/report/Report.ts";
+
+const powerStatusLabels: Record<PowerStatus, string> = {
+    POWER: "Tiene energía",
+    NO_POWER: "Sin energía",
+};
 
 interface ReportDetailModalProps {
     report: Report | null;
@@ -30,6 +35,12 @@ export const ReportDetailModal = ({report, isOpen, onClose}: ReportDetailModalPr
                             >
                                 <i className="fas fa-times"></i>
                             </button>
+                        </div>
+
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-600">
+                                Estado de energía: {powerStatusLabels[report.powerStatus] || report.powerStatus}
+                            </p>
                         </div>
 
                         {/* Description */}
