@@ -12,7 +12,11 @@ export const joinURLParts = (baseURL: string, ...parts: string[]): string => {
 export const getURI = (baseURL?: string, params?: KeyValue): string => {
     const queryParams = JSON.parse(JSON.stringify(omitBy(params, predicate)));
     const query: string = new URLSearchParams(queryParams).toString();
-    return `${baseURL}?${query}`
+    if (!query) {
+        return baseURL ?? '';
+    }
+    const normalized = query.replace(/%3A/g, ':');
+    return `${baseURL}?${normalized}`;
 }
 
 export const getParams = <T, >(object: T) => {

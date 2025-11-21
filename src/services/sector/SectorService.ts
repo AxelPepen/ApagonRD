@@ -1,5 +1,5 @@
 import {BaseService} from "../BaseService.ts";
-import {Sector} from "../../domain/model/sector/Sector.ts";
+import {Sector, SectorUptimeHistory, SectorUptimeParams} from "../../domain/model/sector/Sector.ts";
 
 export class SectorService extends BaseService {
     private static factory: SectorService = new SectorService();
@@ -19,5 +19,14 @@ export class SectorService extends BaseService {
     async getCurrentSector(lat: number, lon: number): Promise<Sector> {
         return this.get<Sector>('/current', { lat, lon });
     }
+
+    async getSectorUptime(sectorId: number, params: SectorUptimeParams): Promise<SectorUptimeHistory> {
+        return this.getWithBody<SectorUptimeHistory>(
+            `/histories/${sectorId}/uptime`,
+            params
+        );
+    }
+
+
 }
 

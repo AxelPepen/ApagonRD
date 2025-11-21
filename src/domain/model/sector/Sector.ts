@@ -18,3 +18,20 @@ export interface CurrentSector {
     sectorName: string;
 }
 
+export interface SectorUptimeHistory {
+    sector: Sector;
+    start: string;
+    end: string;
+    percentage: number;
+    powerHours: number;
+    totalHours: number;
+    powerMinutes: number;
+    totalMinutes: number;
+    period?: string | null;
+}
+
+export interface SectorUptimeParams {
+    start: string;
+    end: string;
+}
+

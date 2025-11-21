@@ -9,23 +9,29 @@ import {LandingSite} from "./modules/landingSite/LandingSite.tsx";
 import {HomePage} from "./modules/home/HomePage.tsx";
 import {ReportarPage} from "./modules/ReportSector/ReportarPage.tsx";
 import {MisReportesPage} from "./modules/Reports/MisReportesPage.tsx";
+import {UptimeDashboardPage} from "./modules/uptime/UptimeDashboardPage.tsx";
 import {ChangePasswordPage} from "./modules/auth/recover/ChangePasswordPage.tsx";
+import {GuestOnly, RequireAuth} from "./components/shared/RouteGuards.tsx";
 
 export const AppRouting = () => {
     return (
         <Routes>
-            <Route path="/" element={<LandingSite />} />
-            <Route path="/auth/recover" element={<ChangePasswordPage />} />
+            <Route path="/" element={<LandingSite/>}/>
+            <Route path="/auth/recover" element={<ChangePasswordPage/>}/>
 
-
-            <Route path="/app/*" element={<MainLayout/>}>
-                <Route index element={<Navigate to="inicio" replace/>}/>
-                <Route path="inicio" element={<HomePage/>}/>
-                <Route path="reportar" element={<ReportarPage/>}/>
-                <Route path="mis-reportes" element={<MisReportesPage/>}/>
+            <Route element={<GuestOnly/>}>
+                <Route path="/auth/*" element={<AuthPage/>}/>
             </Route>
 
-            <Route path="/auth/*" element={<AuthPage/>}/>
+            <Route element={<RequireAuth/>}>
+                <Route path="/app/*" element={<MainLayout/>}>
+                    <Route index element={<Navigate to="inicio" replace/>}/>
+                    <Route path="inicio" element={<HomePage/>}/>
+                    <Route path="dashboard" element={<UptimeDashboardPage/>}/>
+                    <Route path="reportar" element={<ReportarPage/>}/>
+                    <Route path="mis-reportes" element={<MisReportesPage/>}/>
+                </Route>
+            </Route>
 
             <Route path="/errors" element={<ErrorsLayout/>}>
                 <Route index element={<Error404/>}/>
