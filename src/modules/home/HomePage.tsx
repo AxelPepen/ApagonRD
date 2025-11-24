@@ -27,6 +27,19 @@ function MapUpdater({center}: {center: [number, number]}) {
     return null;
 }
 
+// Componente para el botón de centrar ubicación
+function LocateButton({onLocate}: {onLocate: () => void}) {
+    return (
+        <button
+            onClick={onLocate}
+            className="absolute top-4 right-4 z-[1000] bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors"
+            title="Centrar en mi ubicación"
+        >
+            <i className="fas fa-map-marker-alt text-xl"></i>
+        </button>
+    );
+}
+
 export const HomePage = () => {
     const navigate = useNavigate();
     const [sectors, setSectors] = useState<Sector[]>([]);
@@ -35,25 +48,43 @@ export const HomePage = () => {
     const [loading, setLoading] = useState(true);
     const mapRef = useRef<L.Map | null>(null);
 
-    // Obtener ubicación del usuario (solo una vez al cargar)
-    useEffect(() => {
+    // Función para obtener y centrar la ubicación del usuario
+    const handleLocate = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    setUserLocation([lat, lon]);
+                    const newLocation: [number, number] = [lat, lon];
+                    setUserLocation(newLocation);
                     
-                    // Determinar el sector actual del usuario (solo una vez)
+                    // Centrar el mapa en la ubicación del usuario con zoom
+                    if (mapRef.current) {
+                        mapRef.current.setView(newLocation, 15); // Zoom 15 para una vista más cercana
+                    }
+                    
+                    // Determinar el sector actual del usuario
                     SectorService.instance.getCurrentSector(lat, lon)
                         .then((sector) => {
                             if (sector) setCurrentSector(sector);
-                        })},
+                        })
+                        .catch((err) => {
+                            console.error("Error obteniendo sector:", err);
+                        });
+                },
                 (error) => {
                     console.error("Error obteniendo ubicación:", error);
+                    toast.error("No se pudo obtener tu ubicación. Por favor, habilita la geolocalización.");
                 }
             );
+        } else {
+            toast.error("Tu navegador no soporta geolocalización.");
         }
+    };
+
+    // Obtener ubicación del usuario (solo una vez al cargar)
+    useEffect(() => {
+        handleLocate();
     }, []); // Solo se ejecuta una vez al montar el componente
 
     // Cargar sectores (solo una vez al montar)
@@ -147,6 +178,8 @@ export const HomePage = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                
+                <LocateButton onLocate={handleLocate} />
                 
                 {userLocation && <MapUpdater center={userLocation} />}
                 

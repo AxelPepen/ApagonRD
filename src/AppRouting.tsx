@@ -24,13 +24,13 @@ export const AppRouting = () => {
             </Route>
 
             <Route element={<RequireAuth/>}>
-                <Route path="/app/*" element={<MainLayout/>}>
-                    <Route index element={<Navigate to="inicio" replace/>}/>
-                    <Route path="inicio" element={<HomePage/>}/>
-                    <Route path="dashboard" element={<UptimeDashboardPage/>}/>
-                    <Route path="reportar" element={<ReportarPage/>}/>
-                    <Route path="mis-reportes" element={<MisReportesPage/>}/>
-                </Route>
+            <Route path="/app/*" element={<MainLayout/>}>
+                <Route index element={<Navigate to="inicio" replace/>}/>
+                <Route path="inicio" element={<HomePage/>}/>
+                <Route path="dashboard" element={<UptimeDashboardPage/>}/>
+                <Route path="reportar" element={<ReportarPage/>}/>
+                <Route path="mis-reportes" element={<MisReportesPage/>}/>
+            </Route>
             </Route>
 
             <Route path="/errors" element={<ErrorsLayout/>}>

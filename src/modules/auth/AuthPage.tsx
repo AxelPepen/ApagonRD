@@ -6,13 +6,15 @@ import {RegisterPage} from "./RegisterPage.tsx";
 
 export const AuthPage = () => {
     return (
-        <Routes>
-            <Route path="/" element={<Navigate to="/auth/login" replace/>}/>
-            <Route path='login' element={<LoginPage/>}/>
-            <Route path='register' element={<RegisterPage/>}/>
-            <Route path='reset' element={<LoginPage/>}/>
-            <Route path='recover' element={<RecoverPage/>}/>
-            <Route path='send-recover' element={<SendRecoverPasswordPage/>}/>
-        </Routes>
+        <div className="h-screen overflow-y-auto hide-scrollbar">
+            <Routes>
+                <Route path="/" element={<Navigate to="/auth/login" replace/>}/>
+                <Route path='login' element={<LoginPage/>}/>
+                <Route path='register' element={<RegisterPage/>}/>
+                <Route path='reset' element={<LoginPage/>}/>
+                <Route path='recover' element={<RecoverPage/>}/>
+                <Route path='send-recover' element={<SendRecoverPasswordPage/>}/>
+            </Routes>
+        </div>
     )
 }

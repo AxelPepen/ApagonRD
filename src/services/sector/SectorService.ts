@@ -1,5 +1,6 @@
 import {BaseService} from "../BaseService.ts";
 import {Sector, SectorUptimeHistory, SectorUptimeParams} from "../../domain/model/sector/Sector.ts";
+import {KeyValue} from "../../domain/types/steoreotype.ts";
 
 export class SectorService extends BaseService {
     private static factory: SectorService = new SectorService();
@@ -21,11 +22,9 @@ export class SectorService extends BaseService {
     }
 
     async getSectorUptime(sectorId: number, params: SectorUptimeParams): Promise<SectorUptimeHistory> {
-        return this.getWithBody<SectorUptimeHistory>(
-            `/histories/${sectorId}/uptime`,
-            params
-        );
+        return this.get<SectorUptimeHistory>(`/histories/${sectorId}/uptime`, params as unknown as KeyValue);
     }
+
 
 
 }

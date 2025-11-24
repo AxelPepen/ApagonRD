@@ -2,9 +2,19 @@ import {useEffect, useMemo, useState} from "react";
 import {SectorService} from "../../services/sector/SectorService.ts";
 import {Sector, SectorUptimeHistory, SectorUptimeParams} from "../../domain/model/sector/Sector.ts";
 import {toast} from "react-toastify";
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend
+} from 'chart.js';
+import {Doughnut} from 'react-chartjs-2';
 
-const circleRadius = 90;
-const circleCircumference = 2 * Math.PI * circleRadius;
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend
+);
 
 const formatDateParam = (date: Date): string => {
     const pad = (value: number): string => value.toString().padStart(2, '0');
@@ -28,7 +38,7 @@ const getCurrentMonthRange = (): SectorUptimeParams => {
 export const UptimeDashboardPage = () => {
     const [loading, setLoading] = useState(true);
     const [uptime, setUptime] = useState<SectorUptimeHistory | null>(null);
-    const [_currentSector, setCurrentSector] = useState<Sector | null>(null);
+    const [currentSector, setCurrentSector] = useState<Sector | null>(null);
     const [error, setError] = useState<string>();
 
     useEffect(() => {
@@ -49,9 +59,9 @@ export const UptimeDashboardPage = () => {
                         const uptimeData = await SectorService.instance.getSectorUptime(sector.id, range);
                         setUptime(uptimeData);
                     } catch (err: any) {
-                        console.error("Error cargando historial de uptime:", err);
-                        toast.error("No se pudo cargar la información de uptime.");
-                        setError("No se pudo obtener el historial de uptime.");
+                        console.error("Error cargando estadísticas:", err);
+                        toast.error("No se pudo cargar la información del sector.");
+                        setError("No se pudo obtener las estadísticas del sector.");
                     } finally {
                         setLoading(false);
                     }
@@ -70,19 +80,80 @@ export const UptimeDashboardPage = () => {
 
     const percentage = uptime?.percentage ?? 0;
     const effectivePercentage = Math.min(Math.max(percentage, 0), 100);
-    const strokeOffset = circleCircumference - (effectivePercentage / 100) * circleCircumference;
 
     const downtimeHours = useMemo(() => {
         if (!uptime) return 0;
         return Math.max(uptime.totalHours - uptime.powerHours, 0);
     }, [uptime]);
 
+    const chartData = useMemo(() => {
+        if (!uptime) return null;
+        return {
+            labels: ['Con energía', 'Sin energía'],
+            datasets: [{
+                data: [uptime.powerHours, downtimeHours],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderColor: ['#059669', '#dc2626'],
+                borderWidth: 2,
+            }]
+        };
+    }, [uptime, downtimeHours]);
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom' as const,
+                labels: {
+                    padding: 15,
+                    font: {
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context: any) {
+                        const label = context.label || '';
+                        const value = context.parsed || context.raw;
+                        if (context.dataIndex === 0) {
+                            return `${label}: ${value.toFixed(2)} horas`;
+                        }
+                        return `${label}: ${value.toFixed(2)} horas`;
+                    }
+                }
+            }
+        }
+    };
+
+    const getStatusDisplay = (status: string) => {
+        if (status === 'POWER' || status === 'CON_ENERGIA') {
+            return {
+                text: 'Con energía',
+                color: 'text-green-600',
+                bgColor: 'bg-green-100',
+                icon: 'fa-bolt'
+            };
+        } else {
+            return {
+                text: 'Sin energía',
+                color: 'text-red-600',
+                bgColor: 'bg-red-100',
+                icon: 'fa-power-off'
+            };
+        }
+    };
+
+    const sectorStatus = uptime?.sector?.status || currentSector?.status;
+    const statusDisplay = sectorStatus ? getStatusDisplay(sectorStatus) : null;
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="text-center">
                     <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-                    <p className="text-gray-600">Cargando dashboard de uptime...</p>
+                    <p className="text-gray-600">Cargando estadísticas del sector...</p>
                 </div>
             </div>
         );
@@ -91,9 +162,9 @@ export const UptimeDashboardPage = () => {
     return (
         <div className="p-6">
             <div className="flex flex-col gap-4">
-                <h1 className="text-3xl font-bold text-gray-800">Dashboard de Uptime</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Estadísticas del sector</h1>
                 <p className="text-gray-600 max-w-2xl">
-                    Visualiza cuánto tiempo ha tenido energía el sector detectado durante el mes en curso.
+                    Aquí te mostramos cuánto tiempo tu sector ha pasado sin energía este mes.
                 </p>
             </div>
 
@@ -106,79 +177,129 @@ export const UptimeDashboardPage = () => {
             {!uptime ? (
                 !error && (
                     <div className="mt-8 text-gray-600">
-                        No se encontró información de sector o uptime. Asegúrate de tener la ubicación habilitada.
+                        No se encontró información del sector. Asegúrate de tener la ubicación habilitada.
                     </div>
                 )
             ) : (
-                <div className="mt-8 grid gap-6 lg:grid-cols-2">
-                    <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 p-6 shadow-sm bg-white">
-                        <div className="flex items-center justify-between">
+                <div className="mt-8 space-y-6">
+                    {/* Header Card */}
+                    <div className="rounded-2xl border border-gray-200 p-6 shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
-                                <p className="text-sm uppercase tracking-wide text-gray-500">Sector</p>
-                                <h2 className="text-2xl font-semibold text-gray-800">{uptime.sector.name}</h2>
+                                <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">Sector</p>
+                                <h2 className="text-3xl font-bold text-gray-800">{uptime.sector.name}</h2>
+                                {statusDisplay && (
+                                    <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full ${statusDisplay.bgColor}`}>
+                                        <i className={`fas ${statusDisplay.icon} ${statusDisplay.color}`}></i>
+                                        <span className={`text-sm font-medium ${statusDisplay.color}`}>
+                                            {statusDisplay.text}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                            <p className="text-sm text-gray-500">
-                                {new Date(uptime.start).toLocaleDateString('es-DO')} - {new Date(uptime.end).toLocaleDateString('es-DO')}
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="relative flex items-center justify-center">
-                                <svg width="220" height="220" viewBox="0 0 220 220">
-                                    <circle
-                                        cx="110"
-                                        cy="110"
-                                        r={circleRadius}
-                                        fill="none"
-                                        stroke="#e5e7eb"
-                                        strokeWidth="16"
-                                    />
-                                    <circle
-                                        cx="110"
-                                        cy="110"
-                                        r={circleRadius}
-                                        fill="none"
-                                        stroke="#10b981"
-                                        strokeWidth="16"
-                                        strokeDasharray={circleCircumference}
-                                        strokeDashoffset={strokeOffset}
-                                        strokeLinecap="round"
-                                        transform="rotate(-90 110 110)"
-                                    />
-                                </svg>
-                                <div className="absolute flex flex-col items-center">
-                                    <span className="text-4xl font-semibold text-gray-900">
-                                        {effectivePercentage.toFixed(1)}%
-                                    </span>
-                                    <span className="text-sm uppercase tracking-wider text-gray-500">
-                                        Tiempo con luz
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="text-sm text-gray-600">
-                                {uptime.powerHours.toFixed(2)} horas con energía <span className="text-gray-400">/</span> {uptime.totalHours.toFixed(2)} horas totales
+                            <div className="text-right">
+                                <p className="text-sm text-gray-500 mb-1">Período</p>
+                                <p className="text-lg font-semibold text-gray-700">
+                                    {new Date(uptime.start).toLocaleDateString('es-DO', { day: 'numeric', month: 'short' })} - {new Date(uptime.end).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-6 rounded-2xl border border-gray-200 p-6 shadow-sm bg-white">
-                        <h3 className="text-lg font-semibold text-gray-800">Resumen del mes</h3>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex justify-between text-sm text-gray-600">
-                                <span>Días con energía</span>
-                                <span>{((uptime.percentage / 100) * 30).toFixed(1)} días</span>
+                    {/* Stats Cards */}
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Tiempo con energía</p>
+                                    <p className="text-3xl font-bold text-green-600">{effectivePercentage.toFixed(1)}%</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i className="fas fa-bolt text-green-600 text-xl"></i>
+                                </div>
                             </div>
-                            <div className="flex justify-between text-sm text-gray-600">
-                                <span>Horas sin luz</span>
-                                <span>{downtimeHours.toFixed(2)} hrs</span>
+                        </div>
+
+                        <div className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Horas con energía</p>
+                                    <p className="text-3xl font-bold text-blue-600">{uptime.powerHours.toFixed(1)}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i className="fas fa-clock text-blue-600 text-xl"></i>
+                                </div>
                             </div>
-                            <div className="flex justify-between text-sm text-gray-600">
-                                <span>Minutos con energía</span>
-                                <span>{uptime.powerMinutes.toLocaleString('es-DO')}</span>
+                        </div>
+
+                        <div className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Horas sin energía</p>
+                                    <p className="text-3xl font-bold text-red-600">{downtimeHours.toFixed(1)}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                                    <i className="fas fa-power-off text-red-600 text-xl"></i>
+                                </div>
                             </div>
-                            <div className="flex justify-between text-sm text-gray-600">
-                                <span>Minutos totales</span>
-                                <span>{uptime.totalMinutes.toLocaleString('es-DO')}</span>
+                        </div>
+
+                        <div className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-600 mb-1">Total horas</p>
+                                    <p className="text-3xl font-bold text-gray-700">{uptime.totalHours.toFixed(1)}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i className="fas fa-calendar text-gray-600 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Doughnut Chart */}
+                    <div className="rounded-2xl border border-gray-200 p-6 shadow-sm bg-white">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Proporción de energía</h3>
+                        {chartData && (
+                            <div className="h-64">
+                                <Doughnut data={chartData} options={chartOptions} />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Resumen del mes */}
+                    <div className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i className="fas fa-calendar-alt text-purple-500"></i>
+                            Resumen del mes
+                        </h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-red-50">
+                                <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                    <i className="fas fa-power-off text-red-600"></i>
+                                    Días sin energía
+                                </span>
+                                <span className="text-lg font-bold text-red-700">
+                                    {Math.round((downtimeHours / uptime.totalHours) * 30)} días
+                                </span>
+                            </div>
+                            <div className={`flex items-center justify-between p-3 rounded-lg ${effectivePercentage > 50 ? 'bg-green-50' : 'bg-indigo-50'}`}>
+                                <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                    <i className={`fas fa-percentage ${effectivePercentage > 50 ? 'text-green-600' : 'text-indigo-600'}`}></i>
+                                    Eficiencia
+                                </span>
+                                <span className={`text-lg font-bold ${effectivePercentage > 50 ? 'text-green-700' : 'text-indigo-700'}`}>
+                                    {effectivePercentage.toFixed(2)}%
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-red-50">
+                                <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                    <i className="fas fa-power-off text-red-600"></i>
+                                    Promedio diario sin luz
+                                </span>
+                                <span className="text-lg font-bold text-red-700">
+                                    {(downtimeHours / 30).toFixed(2)} hrs/día
+                                </span>
                             </div>
                         </div>
                     </div>

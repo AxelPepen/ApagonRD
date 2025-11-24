@@ -12,8 +12,8 @@ export const MainLayout = () => {
         return (
             <div className="flex flex-col h-screen overflow-hidden">
                 <MainNavbar/>
-                <main className="flex-1 content pt-20 overflow-hidden" id="content" role="content">
-                    <div className="wrapper flex h-full flex-col overflow-hidden">
+                <main className="flex-1 content pt-20 overflow-y-auto hide-scrollbar" id="content" role="content">
+                    <div className="wrapper flex min-h-full flex-col">
                         <Outlet/>
                     </div>
                 </main>

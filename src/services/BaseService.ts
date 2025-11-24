@@ -40,26 +40,6 @@ export abstract class BaseService<R = unknown> {
         const options: RequestInit = {headers, method: 'GET'};
         return this.execRequest<T>(url, options);
     }
-    protected getWithBody<T>(
-        endpoint: string = '',
-        body: any = {},
-        headers: KeyValueOf<string> = {}
-    ): Promise<T> {
-
-        const url: string = (this.isFull ? '' : environment.apiURL) + this.baseURL + endpoint;
-
-        const options: RequestInit = {
-            method: 'GET',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        };
-
-        return this.execRequest<T>(url, options);
-    }
-
 
     protected post<T>(endpoint: string = '', body: any = {}, headers: Record<string, string> = {}): Promise<T> {
         const url: string = (this.isFull ? '' : environment.apiURL) + this.baseURL + endpoint;

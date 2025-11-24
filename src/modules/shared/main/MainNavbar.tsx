@@ -10,10 +10,10 @@ export const MainNavbar = () => {
     const {current, logout}: AuthContextValue = useAuthContext();
 
     const navItems = [
-        { path: '/app/dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
         { path: '/app/inicio', label: 'Inicio', icon: 'fa-home' },
         { path: '/app/reportar', label: 'Reportar', icon: 'fa-plus-circle' },
         { path: '/app/mis-reportes', label: 'Mis reportes', icon: 'fa-list' },
+        { path: '/app/dashboard', label: 'Estadisticas', icon: 'fa-chart-line' },
     ];
 
     const isActive = (path: string) => location.pathname.startsWith(path);

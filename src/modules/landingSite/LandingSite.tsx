@@ -53,17 +53,17 @@ export const LandingSite = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+        <div className="min-h-screen bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-300 overflow-y-auto hide-scrollbar">
             {/* Navbar */}
             <nav className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-sm z-50 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-sky-700 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent cursor-pointer"
                         onClick={() => window.scrollTo(0, 0)}>ApagonRD</div>
                     <ul className="flex gap-8 items-center list-none">
-                        <li><a href="#about" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Acerca de</a></li>
-                        <li><a href="#faq" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">FAQ</a></li>
-                        <li><a href="#download" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Descargar</a></li>
-                        <li><a href="#contact" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Contactanos</a></li>
+                        <li className="hidden md:block"><a href="#about" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Acerca de</a></li>
+                        <li className="hidden md:block"><a href="#faq" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">FAQ</a></li>
+                        <li className="hidden md:block"><a href="#download" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Descargar</a></li>
+                        <li className="hidden md:block"><a href="#contact" className="text-slate-900 dark:text-slate-100 hover:text-sky-500 dark:hover:text-blue-400 font-medium transition-colors">Contactanos</a></li>
                         <li>
                             <button onClick={() => navigate('/auth/login')} className="px-5 py-2 bg-sky-500 text-white font-semibold rounded-lg shadow-sm hover:shadow-md hover:bg-sky-600 transition-all">
                                 Ingresar

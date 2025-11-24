@@ -113,14 +113,15 @@ export const ReportarPage = () => {
     };
 
     const onSubmit = async (data: CreateReport) => {
-        if (!latitude || !longitude) {
-            toast.error("No se pudo obtener tu ubicación. Por favor recarga la página.");
-            return;
-        }
         if (!currentSector) {
             toast.error("Por favor selecciona un sector.");
             return;
         }
+        
+        // Si no hay lat/lon pero hay un sector seleccionado manualmente, usar coordenadas por defecto o del sector
+        const finalLatitude = latitude || 0;
+        const finalLongitude = longitude || 0;
+        
         setLoading(true);
 
         let photoUrl: string | undefined;
@@ -135,8 +136,8 @@ export const ReportarPage = () => {
 
         uploadPromise.then(() => {
                 const reportData: CreateReport = {
-                    latitude,
-                    longitude,
+                    latitude: finalLatitude,
+                    longitude: finalLongitude,
                     sectorId: currentSector.id,
                     powerStatus: data.powerStatus,
                     description: data.description,

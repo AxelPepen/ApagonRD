@@ -3,7 +3,7 @@ import {Outlet} from 'react-router-dom';
 export const ErrorsLayout = () => {
 
     return (
-        <div className='d-flex flex-column flex-root'>
+        <div className='d-flex flex-column flex-root h-screen overflow-y-auto hide-scrollbar'>
             <div className='d-flex flex-column flex-center flex-column-fluid'>
                 <div className='d-flex flex-column flex-center text-center p-10'>
                     <div className='card card-flush  w-lg-650px py-5'>
