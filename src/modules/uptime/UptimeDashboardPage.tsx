@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from "react";
 import {SectorService} from "../../services/sector/SectorService.ts";
 import {Sector, SectorUptimeHistory, SectorUptimeParams} from "../../domain/model/sector/Sector.ts";
 import {toast} from "react-toastify";
+import {Select} from "../../components/io/Select.tsx";
 import {
     Chart as ChartJS,
     ArcElement,
@@ -39,12 +40,44 @@ export const UptimeDashboardPage = () => {
     const [loading, setLoading] = useState(true);
     const [uptime, setUptime] = useState<SectorUptimeHistory | null>(null);
     const [currentSector, setCurrentSector] = useState<Sector | null>(null);
+    const [allSectors, setAllSectors] = useState<Sector[]>([]);
+    const [showSectorSelector, setShowSectorSelector] = useState(false);
     const [error, setError] = useState<string>();
+
+    // Cargar todos los sectores para el selector manual
+    useEffect(() => {
+        SectorService.instance.getAllSectors()
+            .then((sectors) => {
+                setAllSectors(Array.isArray(sectors) ? sectors : []);
+            })
+            .catch((err) => {
+                console.error("Error cargando sectores:", err);
+            });
+    }, []);
+
+    // Función para cargar estadísticas de un sector
+    const loadSectorStats = async (sector: Sector) => {
+        try {
+            setLoading(true);
+            setError(undefined);
+            const range = getCurrentMonthRange();
+            const uptimeData = await SectorService.instance.getSectorUptime(sector.id, range);
+            setUptime(uptimeData);
+            setCurrentSector(sector);
+        } catch (err: any) {
+            console.error("Error cargando estadísticas:", err);
+            toast.error("No se pudo cargar la información del sector.");
+            setError("No se pudo obtener las estadísticas del sector.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             if (!navigator.geolocation) {
-                setError("Tu navegador no soporta geolocalización.");
+                toast.warning("Tu navegador no soporta geolocalización. Por favor selecciona un sector manualmente.");
+                setShowSectorSelector(true);
                 setLoading(false);
                 return;
             }
@@ -54,22 +87,19 @@ export const UptimeDashboardPage = () => {
                     try {
                         const {latitude: lat, longitude: lon} = position.coords;
                         const sector = await SectorService.instance.getCurrentSector(lat, lon);
-                        setCurrentSector(sector);
-                        const range = getCurrentMonthRange();
-                        const uptimeData = await SectorService.instance.getSectorUptime(sector.id, range);
-                        setUptime(uptimeData);
+                        await loadSectorStats(sector);
+                        setShowSectorSelector(false);
                     } catch (err: any) {
-                        console.error("Error cargando estadísticas:", err);
-                        toast.error("No se pudo cargar la información del sector.");
-                        setError("No se pudo obtener las estadísticas del sector.");
-                    } finally {
+                        console.error("Error obteniendo sector:", err);
+                        toast.warning("No se pudo determinar tu sector automáticamente. Por favor selecciona uno manualmente.");
+                        setShowSectorSelector(true);
                         setLoading(false);
                     }
                 },
                 (geoError) => {
                     console.error("Error geolocalización:", geoError);
-                    toast.error("Habilita la ubicación para obtener tu sector.");
-                    setError("Habilita la ubicación para obtener el sector.");
+                    toast.warning("No se pudo obtener tu ubicación. Por favor selecciona un sector manualmente.");
+                    setShowSectorSelector(true);
                     setLoading(false);
                 }
             );
@@ -174,10 +204,33 @@ export const UptimeDashboardPage = () => {
                 </div>
             )}
 
+            {showSectorSelector && (
+                <div className="mt-6">
+                    <Select
+                        label="Selecciona un sector"
+                        options={allSectors.map(sector => ({
+                            value: sector.id.toString(),
+                            description: sector.name
+                        }))}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                            const sectorId = parseInt(e.target.value);
+                            if (sectorId) {
+                                const selectedSector = allSectors.find(s => s.id === sectorId);
+                                if (selectedSector) {
+                                    loadSectorStats(selectedSector);
+                                    setShowSectorSelector(false);
+                                }
+                            }
+                        }}
+                        error={undefined}
+                    />
+                </div>
+            )}
+
             {!uptime ? (
-                !error && (
+                !error && !showSectorSelector && (
                     <div className="mt-8 text-gray-600">
-                        No se encontró información del sector. Asegúrate de tener la ubicación habilitada.
+                        No se encontró información del sector. Por favor selecciona un sector manualmente.
                     </div>
                 )
             ) : (
