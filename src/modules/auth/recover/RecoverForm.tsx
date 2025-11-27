@@ -3,7 +3,7 @@ import {useForm} from 'react-hook-form';
 import {RecoverSchema} from "../../../schemas/AuthSchemas.ts";
 import {State, UseForm} from "../../../domain/types/steoreotype.ts";
 import {Form} from "../../../components/io/Form.tsx";
-import {Input} from "../../../components/io/Input.tsx";
+import {PasswordInput} from "../../../components/io/PasswordInput.tsx";
 import {useEffect, useState} from "react";
 import {useQueryParams} from "../../../hooks/useQueryParams.tsx";
 import {RecoverPassword} from "../../../domain/model/account/RecoverPassword.ts";
@@ -133,14 +133,14 @@ export const RecoverPasswordSchema = () => {
             <input type="hidden" {...register('token')} />
 
             <div className="flex flex-col">
-                <Input label={'Nueva Contraseña'} type="password"
-                       {...register('password')}
-                       error={errors.password?.message}/>
+                <PasswordInput label={'Nueva Contraseña'}
+                               {...register('password')}
+                               error={errors.password?.message}/>
             </div>
             <div className="flex flex-col mt-2">
-                <Input label={'Repetir Contraseña'} type="password"
-                       {...register('repeated')}
-                       error={errors.repeated?.message}/>
+                <PasswordInput label={'Repetir Contraseña'}
+                               {...register('repeated')}
+                               error={errors.repeated?.message}/>
             </div>
             <button className="btn btn-primary flex justify-center grow" disabled={loading}>
                 Restablecer Contraseña

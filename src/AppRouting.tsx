@@ -12,6 +12,7 @@ import {MisReportesPage} from "./modules/Reports/MisReportesPage.tsx";
 import {UptimeDashboardPage} from "./modules/uptime/UptimeDashboardPage.tsx";
 import {ChangePasswordPage} from "./modules/auth/recover/ChangePasswordPage.tsx";
 import {GuestOnly, RequireAuth} from "./components/shared/RouteGuards.tsx";
+import {AssistantPage} from "./modules/assistant/AssistantPage.tsx";
 
 export const AppRouting = () => {
     return (
@@ -24,13 +25,14 @@ export const AppRouting = () => {
             </Route>
 
             <Route element={<RequireAuth/>}>
-            <Route path="/app/*" element={<MainLayout/>}>
-                <Route index element={<Navigate to="inicio" replace/>}/>
-                <Route path="inicio" element={<HomePage/>}/>
-                <Route path="dashboard" element={<UptimeDashboardPage/>}/>
-                <Route path="reportar" element={<ReportarPage/>}/>
-                <Route path="mis-reportes" element={<MisReportesPage/>}/>
-            </Route>
+                <Route path="/app/*" element={<MainLayout/>}>
+                    <Route index element={<Navigate to="inicio" replace/>}/>
+                    <Route path="inicio" element={<HomePage/>}/>
+                    <Route path="dashboard" element={<UptimeDashboardPage/>}/>
+                    <Route path="reportar" element={<ReportarPage/>}/>
+                    <Route path="mis-reportes" element={<MisReportesPage/>}/>
+                    <Route path="asistente" element={<AssistantPage/>}/>
+                </Route>
             </Route>
 
             <Route path="/errors" element={<ErrorsLayout/>}>

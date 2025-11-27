@@ -3,22 +3,28 @@ import {NavigateFunction, useNavigate, useLocation} from "react-router-dom";
 import {LoadingContent} from "../../../components/io/output/LoadingContent.tsx";
 import {AuthContextValue, useAuthContext} from "../../../contexts/AuthContext.tsx";
 import clsx from "clsx";
+import {useState} from "react";
+import {ChangePasswordModal} from "./ChangePasswordModal.tsx";
+import {toast} from "react-toastify";
 
 export const MainNavbar = () => {
     const navigate: NavigateFunction = useNavigate();
     const location = useLocation();
     const {current, logout}: AuthContextValue = useAuthContext();
+    const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
     const navItems = [
         { path: '/app/inicio', label: 'Inicio', icon: 'fa-home' },
         { path: '/app/reportar', label: 'Reportar', icon: 'fa-plus-circle' },
         { path: '/app/mis-reportes', label: 'Mis reportes', icon: 'fa-list' },
         { path: '/app/dashboard', label: 'Estadisticas', icon: 'fa-chart-line' },
+        { path: '/app/asistente', label: 'Asistente', icon: 'fa-robot' },
     ];
 
     const isActive = (path: string) => location.pathname.startsWith(path);
 
     return (
+        <>
         <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
@@ -76,12 +82,20 @@ export const MainNavbar = () => {
                                     )}
                                     
                                     <div className="menu-item" data-menu-dismiss="true">
-                                        <button className="menu-link w-full text-left">
-                                                <span className="menu-icon">
+                                        <button className="menu-link w-full text-left" onClick={() => toast.info('Muy pronto podrás editar tu perfil desde aquí.')}>
+                                            <span className="menu-icon">
                                                 <i className="fa fa-user-edit fa-fw"></i>
-                                                </span>
-                                            <span className="menu-title">Editar mi perfil</span>
-                                            </button>
+                                            </span>
+                                            <span className="menu-title">Editar perfil</span>
+                                        </button>
+                                    </div>
+                                    <div className="menu-item" data-menu-dismiss="true">
+                                        <button className="menu-link w-full text-left" onClick={() => setShowChangePasswordModal(true)}>
+                                            <span className="menu-icon">
+                                                <i className="fa fa-key fa-fw"></i>
+                                            </span>
+                                            <span className="menu-title">Cambiar contraseña</span>
+                                        </button>
                                     </div>
                                     <div className="menu-separator"></div>
                                     <div className="menu-item px-4 py-2">
@@ -100,5 +114,10 @@ export const MainNavbar = () => {
                     </div>
                 </div>
             </header>
+            <ChangePasswordModal
+                isOpen={showChangePasswordModal}
+                onClose={() => setShowChangePasswordModal(false)}
+            />
+        </>
     );
 }

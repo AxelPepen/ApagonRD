@@ -12,13 +12,16 @@ export const PasswordInput = forwardRef<HTMLInputElement, InputParams>(
             'text-red-500': Boolean(error),
         });
 
+        const inputProps = {...props};
+        const autoCompleteValue = inputProps.autoComplete ?? 'new-password';
+
         return (
             <div className={clsx("relative", className)}>
                 {label && (
                     <div className="relative w-fit">
-                        <label htmlFor={props.name} className={labelClassName}>
+                        <label htmlFor={inputProps.name} className={labelClassName}>
                             {label}
-                            {props.required && <small className="text-4xs absolute -right-2">
+                            {inputProps.required && <small className="text-4xs absolute -right-2">
                                 <i className="fa fa-asterisk"/>
                             </small>}
                         </label>
@@ -27,9 +30,9 @@ export const PasswordInput = forwardRef<HTMLInputElement, InputParams>(
                 <div className="relative">
                     <input
                         ref={ref}
-                        {...props}
+                        {...inputProps}
                         type={show ? "text" : "password"}
-                        autoComplete="new-password"
+                        autoComplete={autoCompleteValue}
                         className={clsx("input bg-transparent pr-10", {
                             "border-red-500": Boolean(error),
                         })}

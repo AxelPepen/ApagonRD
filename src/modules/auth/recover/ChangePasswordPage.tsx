@@ -4,7 +4,7 @@ import {AuthService} from "../../../services/auth/AuthService.ts";
 import {toast} from "react-toastify";
 import {APPVersion} from "../../../components/io/output/shared/APPVersion.tsx";
 import logo from "../../../assets/images/logo.png";
-import {Input} from "../../../components/io/Input.tsx";
+import {PasswordInput} from "../../../components/io/PasswordInput.tsx";
 
 export const ChangePasswordPage = () => {
     const navigate = useNavigate();
@@ -130,9 +130,8 @@ export const ChangePasswordPage = () => {
 
                         <form onSubmit={handleSubmit} className="card-body flex flex-col gap-5 p-10">
                             <div className="flex flex-col">
-                                <Input 
-                                    label={'Nueva Contraseña'} 
-                                    type="password"
+                                <PasswordInput
+                                    label={'Nueva Contraseña'}
                                     value={password}
                                     onChange={(e: any) => setPassword(e.target.value)}
                                     required
@@ -140,9 +139,8 @@ export const ChangePasswordPage = () => {
                                 />
                             </div>
                             <div className="flex flex-col mt-2">
-                                <Input 
-                                    label={'Repetir Contraseña'} 
-                                    type="password"
+                                <PasswordInput
+                                    label={'Repetir Contraseña'}
                                     value={repeat}
                                     onChange={(e: any) => setRepeat(e.target.value)}
                                     required

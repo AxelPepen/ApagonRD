@@ -7,3 +7,9 @@ export interface RecoverPassword {
 export interface SendRecoverRequest {
     username: string;
 }
+
+export interface ChangePasswordPayload {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}

@@ -4,6 +4,7 @@ import {UseForm} from '../../domain/types/steoreotype.ts';
 import {CreateUser} from '../../domain/model/user/CreateUser.ts';
 import {RegisterSchema} from '../../schemas/AuthSchemas.ts';
 import {Input} from '../../components/io/Input.tsx';
+import {PasswordInput} from "../../components/io/PasswordInput.tsx";
 import {Select} from '../../components/io/Select.tsx';
 import {Form} from "../../components/io/Form.tsx";
 import {Link, useNavigate} from "react-router-dom";
@@ -134,9 +135,8 @@ export const RegisterForm = () => {
 
             {/* Campo: Contraseña */}
             <div className="flex flex-col">
-                <Input
+                <PasswordInput
                     label="Contraseña"
-                    type="password"
                     {...register("password")}
                     error={errors.password?.message}
                     required

@@ -5,6 +5,7 @@ import {UseForm} from '../../domain/types/steoreotype.ts';
 import {UserPasswordLogin} from '../../domain/model/auth/Login.ts';
 import {LoginSchema} from '../../schemas/AuthSchemas.ts';
 import {Input} from '../../components/io/Input.tsx';
+import {PasswordInput} from "../../components/io/PasswordInput.tsx";
 import {Form} from "../../components/io/Form.tsx";
 import {Link} from "react-router-dom";
 import {ErrorMessage} from "../../components/io/output/ErrorMessage.tsx";
@@ -35,11 +36,11 @@ export const LoginForm = () => {
 
             {/* Campo: Contraseña */}
             <div className="flex flex-col">
-                <Input
+                <PasswordInput
                     label="Contraseña"
-                    type="password"
                     {...register("password")}
                     error={errors.password?.message}
+                    autoComplete="current-password"
                 />
             </div>
 

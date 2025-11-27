@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {ChangeEvent, useCallback, useEffect, useMemo, useState} from "react";
 import {SectorService} from "../../services/sector/SectorService.ts";
 import {Sector, SectorUptimeHistory, SectorUptimeParams} from "../../domain/model/sector/Sector.ts";
 import {toast} from "react-toastify";
@@ -56,7 +56,7 @@ export const UptimeDashboardPage = () => {
     }, []);
 
     // Función para cargar estadísticas de un sector
-    const loadSectorStats = async (sector: Sector) => {
+    const loadSectorStats = useCallback(async (sector: Sector) => {
         try {
             setLoading(true);
             setError(undefined);
@@ -71,7 +71,7 @@ export const UptimeDashboardPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -106,7 +106,7 @@ export const UptimeDashboardPage = () => {
         };
 
         fetchData();
-    }, []);
+    }, [loadSectorStats]);
 
     const percentage = uptime?.percentage ?? 0;
     const effectivePercentage = Math.min(Math.max(percentage, 0), 100);
@@ -190,7 +190,7 @@ export const UptimeDashboardPage = () => {
     }
 
     return (
-        <div className="p-6">
+        <div className="px-32 py-6 overflow-y-auto hide-scrollbar">
             <div className="flex flex-col gap-4">
                 <h1 className="text-3xl font-bold text-gray-800">Estadísticas del sector</h1>
                 <p className="text-gray-600 max-w-2xl">
@@ -212,7 +212,7 @@ export const UptimeDashboardPage = () => {
                             value: sector.id.toString(),
                             description: sector.name
                         }))}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                             const sectorId = parseInt(e.target.value);
                             if (sectorId) {
                                 const selectedSector = allSectors.find(s => s.id === sectorId);
