@@ -8,6 +8,11 @@ const initialAssistantMessage: AssistantMessage = {
     content: "¡Hola! Soy Apagón RD, tu asistente especializado en energía eléctrica y apagones en la República Dominicana. ¿En qué puedo ayudarte hoy?"
 };
 
+const systemMessage: AssistantMessage = {
+    role: 'system',
+    content: "Solo dame la respuesta a mi mensaje, de manera resumida y clara."
+};
+
 export const AssistantPage = () => {
     const [messages, setMessages] = useState<AssistantMessage[]>([initialAssistantMessage]);
     const [input, setInput] = useState('');
@@ -18,7 +23,7 @@ export const AssistantPage = () => {
     const handleSend = async (event?: FormEvent) => {
         event?.preventDefault();
         const trimmed = input.trim();
-        if (!trimmed) return;
+        if (!trimmed || loading) return;
 
         const userMessage: AssistantMessage = {role: 'user', content: trimmed};
         const updatedMessages = [...messages, userMessage];
@@ -26,10 +31,18 @@ export const AssistantPage = () => {
         setInput('');
         setLoading(true);
 
+        // Construir el array de mensajes para enviar al backend
+        // El mensaje del sistema siempre debe estar al inicio del array de mensajes
+        // para que el asistente tenga el contexto en toda la conversación
+        const messagesToSend: AssistantMessage[] = [systemMessage, ...updatedMessages];
+
         const payload: AssistantRequest = {
             reply: trimmed,
-            messages: updatedMessages
+            messages: messagesToSend
         };
+
+        // Debug: mostrar el payload completo que se envía
+        console.log('Payload completo enviado:', JSON.stringify(payload, null, 2));
 
         try {
             const response = await AssistantService.instance.sendMessage(payload);
