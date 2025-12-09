@@ -2,11 +2,11 @@
 
 Una plataforma moderna diseñada para ayudar a los dominicanos a mantenerse informados sobre el estado del servicio eléctrico en la República Dominicana. Con ApagónRD puedes conocer en tiempo real qué sectores tienen luz, cuáles no, y reportar cualquier inconveniente de forma rápida y sencilla.
 
-## 🎯 Objetivo
+## Objetivo
 
 Construir una comunidad conectada y colaborativa que comparta información para mejorar el acceso a la energía en cada rincón de la República Dominicana.
 
-## ✨ Características Principales
+## Características Principales
 
 - **Mapa Interactivo**: Visualiza en tiempo real el estado eléctrico de los diferentes sectores del país
 - **Reportes de Apagones**: Reporta cortes de luz o problemas eléctricos con geolocalización automática
@@ -15,7 +15,7 @@ Construir una comunidad conectada y colaborativa que comparta información para 
 - **Gestión de Reportes**: Visualiza y gestiona todos tus reportes en un solo lugar
 - **Modo Oscuro**: Interfaz con soporte para modo claro y oscuro con tema personalizado
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Frontend Framework**: React 18.3.1
 - **Lenguaje**: TypeScript
@@ -27,7 +27,7 @@ Construir una comunidad conectada y colaborativa que comparta información para 
 - **Build Tool**: Vite
 - **Iconos**: Font Awesome
 
-## 📦 Instalación
+## Instalación
 
 1. Clona el repositorio:
 ```bash
@@ -40,17 +40,12 @@ cd ApagonRD
 npm install
 ```
 
-3. Configura las variables de entorno (si es necesario):
-```bash
-# Crea un archivo .env con las configuraciones necesarias
-```
-
-4. Inicia el servidor de desarrollo:
+3. Inicia el servidor de desarrollo:
 ```bash
 npm run dev
 ```
 
-## 🚀 Scripts Disponibles
+## Scripts Disponibles
 
 - `npm run dev` - Inicia el servidor de desarrollo
 - `npm run build-dev` - Compila para desarrollo
@@ -58,7 +53,7 @@ npm run dev
 - `npm run lint` - Ejecuta el linter
 - `npm run preview` - Previsualiza la build de producción
 
-## 📱 Funcionalidades
+## Funcionalidades
 
 ### Mapa de Sectores
 Visualiza en un mapa interactivo el estado eléctrico de cada sector, con indicadores visuales para sectores con y sin energía.
@@ -82,7 +77,7 @@ Asistente especializado que responde preguntas sobre:
 - Tarifas eléctricas
 - Información sobre sectores específicos
 
-## 🧪 Pruebas Automatizadas
+## Pruebas Automatizadas
 
 Este proyecto cuenta con pruebas E2E (End-to-End) automatizadas que verifican el flujo completo de la aplicación desde la perspectiva del usuario.
 
@@ -95,18 +90,18 @@ Las pruebas automatizadas cubren:
 - Visualización de datos
 - Interacción con el asistente de IA
 
-## 🎨 Modo Oscuro
+## Modo Oscuro
 
 La aplicación incluye un modo oscuro completo con:
 - Tema personalizado (negro/morado con acentos dorados)
 - Transiciones suaves entre modos
 - Persistencia de preferencias del usuario
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto es privado.
 
-## 👥 Contribuidores
+## Contribuidores
 
 Desarrollado para mejorar el acceso a información sobre el servicio eléctrico en la República Dominicana.
 
