@@ -5,13 +5,14 @@ import {AuthContextValue, useAuthContext} from "../../../contexts/AuthContext.ts
 import clsx from "clsx";
 import {useEffect, useState} from "react";
 import {ChangePasswordModal} from "./ChangePasswordModal.tsx";
-import {toast} from "react-toastify";
+import {EditProfileModal} from "./EditProfileModal.tsx";
 
 export const MainNavbar = () => {
     const navigate: NavigateFunction = useNavigate();
     const location = useLocation();
     const {current, logout}: AuthContextValue = useAuthContext();
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+    const [showEditProfileModal, setShowEditProfileModal] = useState(false);
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         const stored = localStorage.getItem('theme');
         return stored === 'dark' ? 'dark' : 'light';
@@ -99,7 +100,7 @@ export const MainNavbar = () => {
                                     )}
                                     
                                     <div className="menu-item" data-menu-dismiss="true">
-                                        <button className="menu-link w-full text-left" onClick={() => toast.info('Muy pronto podrás editar tu perfil desde aquí.')}>
+                                        <button className="menu-link w-full text-left" onClick={() => setShowEditProfileModal(true)}>
                                             <span className="menu-icon">
                                                 <i className="fa fa-user-edit fa-fw"></i>
                                             </span>
@@ -142,6 +143,10 @@ export const MainNavbar = () => {
             <ChangePasswordModal
                 isOpen={showChangePasswordModal}
                 onClose={() => setShowChangePasswordModal(false)}
+            />
+            <EditProfileModal
+                isOpen={showEditProfileModal}
+                onClose={() => setShowEditProfileModal(false)}
             />
         </>
     );

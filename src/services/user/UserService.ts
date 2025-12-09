@@ -12,7 +12,7 @@ export class UserService extends BaseService<User> {
     }
 
     constructor() {
-        super('/users');
+        super('users');
     }
 
     async current(): Promise<User> {
@@ -57,5 +57,9 @@ export class UserService extends BaseService<User> {
 
     updateFCMToken(token: string) {
         return super.post('/tokens', {token, platformType: 'WEB'})
+    }
+
+    async updateProfile(data: {username: string; email: string; firstname: string; lastname: string}): Promise<User> {
+        return super.put<User>('/profile', data);
     }
 }
