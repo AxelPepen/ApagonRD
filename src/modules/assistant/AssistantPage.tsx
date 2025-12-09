@@ -8,9 +8,17 @@ const initialAssistantMessage: AssistantMessage = {
     content: "¡Hola! Soy Apagón RD, tu asistente especializado en energía eléctrica y apagones en la República Dominicana. ¿En qué puedo ayudarte hoy?"
 };
 
-const systemMessage: AssistantMessage = {
-    role: 'system',
-    content: "Solo dame la respuesta a mi mensaje, de manera resumida y clara."
+// Evita mensajes duplicados (mismo rol y contenido, trim) preservando el orden
+const dedupeMessages = (msgs: AssistantMessage[]): AssistantMessage[] => {
+    const seen = new Set<string>();
+    const result: AssistantMessage[] = [];
+    for (const msg of msgs) {
+        const key = `${msg.role}::${msg.content.trim()}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        result.push(msg);
+    }
+    return result;
 };
 
 export const AssistantPage = () => {
@@ -26,19 +34,15 @@ export const AssistantPage = () => {
         if (!trimmed || loading) return;
 
         const userMessage: AssistantMessage = {role: 'user', content: trimmed};
-        const updatedMessages = [...messages, userMessage];
+        const updatedMessages: AssistantMessage[] = dedupeMessages([...messages, userMessage]);
+
         setMessages(updatedMessages);
         setInput('');
         setLoading(true);
 
-        // Construir el array de mensajes para enviar al backend
-        // El mensaje del sistema siempre debe estar al inicio del array de mensajes
-        // para que el asistente tenga el contexto en toda la conversación
-        const messagesToSend: AssistantMessage[] = [systemMessage, ...updatedMessages];
-
         const payload: AssistantRequest = {
             reply: trimmed,
-            messages: messagesToSend
+            messages: updatedMessages
         };
 
         // Debug: mostrar el payload completo que se envía
@@ -46,9 +50,13 @@ export const AssistantPage = () => {
 
         try {
             const response = await AssistantService.instance.sendMessage(payload);
-            const reply = response.reply ?? response.message ?? 'No pude obtener una respuesta en este momento.';
-            const assistantMessage: AssistantMessage = {role: 'assistant', content: reply};
-            setMessages([...updatedMessages, assistantMessage]);
+
+            // Si el backend devuelve el historial completo, úsalo; si no, agrega la respuesta al historial local
+            const responseMessages: AssistantMessage[] = response.messages && response.messages.length > 0
+                ? response.messages
+                : [...updatedMessages, {role: 'assistant', content: response.reply ?? response.message ?? 'No pude obtener una respuesta en este momento.'}];
+
+            setMessages(dedupeMessages(responseMessages));
         } catch (err) {
             console.error('Error enviando mensaje al asistente:', err);
             toast.error('No se pudo comunicar con el asistente. Intenta nuevamente.');

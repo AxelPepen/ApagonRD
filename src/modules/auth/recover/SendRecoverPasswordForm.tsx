@@ -45,9 +45,9 @@ export const SendRecoverSchema = () => {
                     </p>
                     <Link
                         to={'/auth/login'}
-                        className="text-blue-600 hover:underline flex items-center gap-2 font-medium"
+                        className="text-[var(--color-primary)] hover:text-[var(--color-primary-strong)] flex items-center gap-2 font-medium"
                     >
-                        <i className="fas fa-arrow-left"></i> Volver al login
+                        <i className="fas fa-arrow-left" style={{color: 'var(--color-primary)'}}></i> Volver al login
                     </Link>
                 </div>
             ) : (
@@ -63,7 +63,7 @@ export const SendRecoverSchema = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-primary flex justify-center">
+                    <button type="submit" className="btn btn-auth-primary flex justify-center">
                         <i className="fas fa-paper-plane mr-2"></i> Enviar
                     </button>
                 </Form>

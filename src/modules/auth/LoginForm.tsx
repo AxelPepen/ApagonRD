@@ -44,20 +44,20 @@ export const LoginForm = () => {
                 />
             </div>
 
-            <button className="btn btn-primary flex justify-center grow">
+            <button className="btn btn-auth-primary flex justify-center grow">
                 INICIAR SESIÓN
                 {loading && <i className="fa fa-spin fa-spinner"/>}
             </button>
 
             <Link to="/auth/send-recover"
-                  className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center justify-center gap-2 transition-colors mt-1">
-                <i className="fa fa-unlock-alt text-blue-500"></i>
+                  className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-strong)] flex items-center justify-center gap-2 transition-colors mt-1">
+                <i className="fa fa-unlock-alt" style={{color: 'var(--color-primary)'}}></i>
                 Recuperar contraseña
             </Link>
 
             <Link to="/auth/register"
-                  className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center justify-center gap-2 transition-colors mt-2">
-                <i className="fa fa-user-plus text-blue-500"></i>
+                  className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-strong)] flex items-center justify-center gap-2 transition-colors mt-2">
+                <i className="fa fa-user-plus" style={{color: 'var(--color-primary)'}}></i>
                 ¿No tienes cuenta? ¡Regístrate!
             </Link>
 

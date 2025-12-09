@@ -5,16 +5,16 @@ import logo from "../../../assets/images/logo.png";
 export const RecoverPage = () => {
     return (
         <div
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-100 to-blue-200 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100 transition-colors duration-500 relative">
+            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-100 to-blue-200 dark:bg-[#0f0c1a] dark:bg-none text-gray-800 dark:text-gray-100 transition-colors duration-500 relative">
 
             <div
-                className="grid lg:grid-cols-2 w-full max-w-6xl h-[90vh] lg:h-[85vh] bg-white dark:bg-gray-950 shadow-2xl rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-800 backdrop-blur-sm">
+                className="grid lg:grid-cols-2 w-full max-w-6xl h-[90vh] lg:h-[85vh] bg-white dark:bg-[#131129] shadow-2xl rounded-3xl overflow-hidden border border-gray-200 dark:border-[#201a36] backdrop-blur-sm">
 
                 {/* Panel Izquierdo - Formulario */}
                 <div className="flex items-center justify-center p-10 lg:p-14">
                     <div className="w-full max-w-md space-y-8">
                         <div className="text-center">
-                            <h1 className="text-3xl font-extrabold text-blue-700 dark:text-blue-400 tracking-tight">
+                            <h1 className="text-3xl font-extrabold text-blue-700 dark:text-[var(--color-primary)] tracking-tight">
                                 Cambiar contraseña
                             </h1>
                             <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
@@ -29,7 +29,7 @@ export const RecoverPage = () => {
 
                 {/* Panel Derecho - Branding */}
                 <div
-                    className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-tr from-blue-600 via-blue-500 to-sky-400 text-white px-10 py-20 relative overflow-hidden">
+                    className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-tr from-blue-600 via-blue-500 to-sky-400 dark:bg-[#1a1730] dark:from-[#1a1730] dark:via-[#1a1730] dark:to-[#1a1730] text-white px-10 py-20 relative overflow-hidden">
                     <div
                         className="absolute inset-0 opacity-20 bg-[url('/textures/pattern.svg')] bg-cover bg-center"></div>
 

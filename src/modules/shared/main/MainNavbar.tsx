@@ -3,7 +3,7 @@ import {NavigateFunction, useNavigate, useLocation} from "react-router-dom";
 import {LoadingContent} from "../../../components/io/output/LoadingContent.tsx";
 import {AuthContextValue, useAuthContext} from "../../../contexts/AuthContext.tsx";
 import clsx from "clsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ChangePasswordModal} from "./ChangePasswordModal.tsx";
 import {toast} from "react-toastify";
 
@@ -12,6 +12,23 @@ export const MainNavbar = () => {
     const location = useLocation();
     const {current, logout}: AuthContextValue = useAuthContext();
     const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        const stored = localStorage.getItem('theme');
+        return stored === 'dark' ? 'dark' : 'light';
+    });
+
+    useEffect(() => {
+        const root = document.documentElement;
+        root.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            root.classList.add('dark');
+        } else {
+            root.classList.remove('dark');
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
     const navItems = [
         { path: '/app/inicio', label: 'Inicio', icon: 'fa-home' },
@@ -25,12 +42,12 @@ export const MainNavbar = () => {
 
     return (
         <>
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+        <header className="fixed top-0 left-0 right-0 z-50 shadow-md" style={{background: 'var(--color-surface)', color: 'var(--color-text)'}}>
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo/Brand */}
                     <div className="flex items-center cursor-pointer" onClick={() => navigate('/app/inicio')}>
-                        <h1 className="text-xl font-bold text-blue-600">ApagónRD</h1>
+                        <h1 className="text-xl font-bold" style={{color: 'var(--color-primary)'}}>ApagónRD</h1>
                     </div>
 
                     {/* Navigation Items */}
@@ -95,6 +112,14 @@ export const MainNavbar = () => {
                                                 <i className="fa fa-key fa-fw"></i>
                                             </span>
                                             <span className="menu-title">Cambiar contraseña</span>
+                                        </button>
+                                    </div>
+                                    <div className="menu-item" data-menu-dismiss="true">
+                                        <button className="menu-link w-full text-left" onClick={toggleTheme}>
+                                            <span className="menu-icon">
+                                                <i className={`fa ${theme === 'light' ? 'fa-moon' : 'fa-sun'} fa-fw`}></i>
+                                            </span>
+                                            <span className="menu-title">{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>
                                         </button>
                                     </div>
                                     <div className="menu-separator"></div>

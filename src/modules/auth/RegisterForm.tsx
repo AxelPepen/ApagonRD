@@ -143,7 +143,7 @@ export const RegisterForm = () => {
                 />
             </div>
 
-            <button className="btn btn-primary flex justify-center grow" disabled={loading}>
+            <button className="btn btn-auth-primary flex justify-center grow" disabled={loading}>
                 {loading ? (
                     <>
                         <i className="fa fa-spin fa-spinner mr-2"/>
@@ -155,8 +155,8 @@ export const RegisterForm = () => {
             </button>
 
             <Link to="/auth/login"
-                  className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center justify-center gap-2 transition-colors mt-1">
-                <i className="fa fa-arrow-left text-blue-500"></i>
+                  className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-strong)] flex items-center justify-center gap-2 transition-colors mt-1">
+                <i className="fa fa-arrow-left" style={{color: 'var(--color-primary)'}}></i>
                 ¿Ya tienes cuenta? Inicia sesión
             </Link>
 

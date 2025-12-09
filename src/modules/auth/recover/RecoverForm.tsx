@@ -113,9 +113,9 @@ export const RecoverPasswordSchema = () => {
                 </p>
                 <Link
                     to={'/auth/send-recover'}
-                    className="text-blue-600 hover:underline flex items-center gap-2 font-medium"
+                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-strong)] flex items-center gap-2 font-medium"
                 >
-                    <i className="fas fa-arrow-left"></i> Solicitar nuevo token
+                    <i className="fas fa-arrow-left" style={{color: 'var(--color-primary)'}}></i> Solicitar nuevo token
                 </Link>
             </div>
         );
@@ -142,7 +142,7 @@ export const RecoverPasswordSchema = () => {
                                {...register('repeated')}
                                error={errors.repeated?.message}/>
             </div>
-            <button className="btn btn-primary flex justify-center grow" disabled={loading}>
+            <button className="btn btn-auth-primary flex justify-center grow" disabled={loading}>
                 Restablecer Contraseña
                 {loading && <i className="fa fa-spin fa-spinner ml-2"/>}
             </button>

@@ -130,3 +130,140 @@
 .spms.layout-initialized .header {
     transition: inset-inline-start var(--tw-sidebar-transition-duration) var(--tw-sidebar-transition-timing);
 }
+
+/* THEME TOKENS */
+:root {
+    --color-bg: #f8fafc;
+    --color-surface: #ffffff;
+    --color-text: #0f172a;
+    --color-primary: #2563eb;
+    --color-primary-strong: #1d4ed8;
+}
+
+html[data-theme='dark'] {
+    --color-bg: #0d0a1a; /* negro morado */
+    --color-surface: #141126;
+    --color-text: #e2e8f0;
+    --color-primary: #d4af37; /* dorado */
+    --color-primary-strong: #b68a23;
+}
+
+html[data-theme='dark'] body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+html[data-theme='dark'] .bg-white {
+    background-color: var(--color-surface) !important;
+}
+
+html[data-theme='dark'] .bg-blue-50,
+html[data-theme='dark'] .bg-gray-50 {
+    background-color: #1a162b !important;
+}
+
+html[data-theme='dark'] .bg-red-50 {
+    background-color: #2e1b21 !important;
+}
+
+html[data-theme='dark'] .bg-green-50 {
+    background-color: #1d2a22 !important;
+}
+
+html[data-theme='dark'] .bg-indigo-50 {
+    background-color: #1c1f33 !important;
+}
+
+html[data-theme='dark'] .bg-blue-100 {
+    background-color: #222a3f !important;
+}
+
+html[data-theme='dark'] .bg-green-100 {
+    background-color: #22322a !important;
+}
+
+html[data-theme='dark'] .bg-red-100 {
+    background-color: #3a2228 !important;
+}
+
+html[data-theme='dark'] .text-gray-800,
+html[data-theme='dark'] .text-gray-700,
+html[data-theme='dark'] .text-gray-600 {
+    color: var(--color-text) !important;
+}
+
+html[data-theme='dark'] .bg-gray-100 {
+    background-color: #1f1b33 !important;
+}
+
+html[data-theme='dark'] .hover\:bg-gray-100:hover {
+    background-color: #1f1b33 !important;
+}
+
+html[data-theme='dark'] .hover\:bg-gray-50:hover {
+    background-color: #1f1b33 !important;
+}
+
+html[data-theme='dark'] .text-blue-600,
+html[data-theme='dark'] .text-blue-500 {
+    color: var(--color-primary) !important;
+}
+
+html[data-theme='dark'] .bg-blue-600 {
+    background-color: var(--color-primary) !important;
+}
+
+html[data-theme='dark'] .hover\:bg-blue-50:hover {
+    background-color: #1f1b33 !important;
+}
+
+html[data-theme='dark'] .btn-primary,
+html[data-theme='dark'] .btn.btn-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary-strong) !important;
+    color: #0b0a0f !important;
+}
+
+html[data-theme='dark'] .btn-light,
+html[data-theme='dark'] .btn.btn-light {
+    background-color: #1f1b33 !important;
+    color: var(--color-text) !important;
+    border-color: #312a4d !important;
+}
+
+html[data-theme='dark'] .border-gray-200,
+html[data-theme='dark'] .light\:border-gray-300,
+html[data-theme='dark'] .border-gray-300 {
+    border-color: #2d2743 !important;
+}
+
+html[data-theme='dark'] .shadow-md,
+html[data-theme='dark'] .shadow-sm,
+html[data-theme='dark'] .shadow-2xl {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45) !important;
+}
+
+/* Auth theme tweaks */
+.btn-auth-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary-strong) !important;
+    color: #0b0a0f !important;
+}
+
+html[data-theme='light'] .btn-auth-primary {
+    color: #0b0a0f !important;
+}
+
+html[data-theme='dark'] .btn-auth-primary {
+    color: #0b0a0f !important;
+}
+
+/* Uptime header card */
+.uptime-header {
+    background: linear-gradient(90deg, #e0ecff 0%, #e8e7ff 100%);
+}
+
+html[data-theme='dark'] .uptime-header {
+    background: linear-gradient(90deg, #161225 0%, #1f1f34 100%) !important;
+    border-color: #2d2743 !important;
+}

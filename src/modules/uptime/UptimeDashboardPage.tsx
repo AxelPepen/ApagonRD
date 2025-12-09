@@ -236,7 +236,7 @@ export const UptimeDashboardPage = () => {
             ) : (
                 <div className="mt-8 space-y-6">
                     {/* Header Card */}
-                    <div className="rounded-2xl border border-gray-200 p-6 shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div className="rounded-2xl border border-gray-200 p-6 shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50 uptime-header">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
                                 <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">Sector</p>
