@@ -147,3 +147,4 @@ export const EditProfileModal = ({isOpen, onClose}: EditProfileModalProps) => {
     );
 };
 
+
