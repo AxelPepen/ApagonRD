@@ -7,6 +7,7 @@
     "dev": "vite",
     "build-dev": "tsc -b && vite build",
     "build-prod": "tsc -b && vite build",
+    "deploy": "npm run build-prod && wrangler deploy",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -55,6 +56,7 @@
     "tailwindcss": "^3.4.15",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.11.0",
-    "vite": "6.2.6"
+    "vite": "6.2.6",
+    "wrangler": "^4.53.0"
   }
 }
