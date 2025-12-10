@@ -31,17 +31,20 @@ export const GenderOptions: Array<SelectOption> = Object.keys(Gender).map(key =>
 });
 
 export interface User extends BaseModel {
-    username: string;
-    email: string;
+
     document: string;
     role: UserRole;
+    username: string;
+    email: string;
+    firstName: string;
+    lastName: string;
     status: UserStatus;
-    info: UserInfo;
+
 }
 
 export interface UserInfo extends BaseModel {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     image: string;
     gender: Gender;
     birth: Date;
@@ -53,6 +56,4 @@ export interface UserRole extends BaseModel {
     description: string;
 }
 
-export const UserOptionMapper = ({id, info}: User): SelectOption => ({value: id, description: info.name});
-export const RoleOptionMapper = ({id: value, description}: UserRole) => ({value, description});
 

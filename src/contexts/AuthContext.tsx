@@ -14,7 +14,6 @@ const HOME_PATH: string = '/app/inicio';
 const APP_PREFIX: string = '/app';
 
 const authService: AuthService = AuthService.instance;
-
 export interface AuthContextValue {
     current?: User,
     message?: string,
@@ -23,6 +22,7 @@ export interface AuthContextValue {
     validating?: boolean,
     authenticated?: boolean,
     authenticate: (request: UserPasswordLogin) => void;
+    setCurrent?: (user: User | undefined) => void; // ← AGREGADO
 }
 
 export const AuthContext: Context<AuthContextValue> = createContext<AuthContextValue>({
@@ -36,6 +36,8 @@ export const AuthProvider: FC<AuthProviderParam> = ({children}: AuthProviderPara
     const [message, setMessage]: State<string> = useState<string>();
     const [loading, setLoading]: State<boolean> = useState<boolean>(false);
     const [validating, setValidating]: State<boolean> = useState<boolean>(true);
+
+
 
     useEffect((): void => {
         const isProtectedRoute: boolean = pathname.startsWith(APP_PREFIX);
@@ -83,6 +85,7 @@ export const AuthProvider: FC<AuthProviderParam> = ({children}: AuthProviderPara
         authenticate,
         authenticated: current !== undefined
     };
+
 
     return (
         <AuthContext.Provider value={providerValue}>
