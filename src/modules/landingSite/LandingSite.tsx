@@ -49,7 +49,7 @@ export const LandingSite = () => {
         }
     ];
 
-    const downloadLink = "https://www.youtube.com/watch?v=SQ05AOMMtOE";
+    const downloadLink = "https://github.com/RainelC/apagon-rd/releases/download/v0.1.0-beta/ApagonRD.apk";
     const currentYear = new Date().getFullYear();
 
     return (
@@ -146,7 +146,7 @@ export const LandingSite = () => {
                     </h2>
                     <div className="max-w-2xl mx-auto text-center">
                         <p className="text-lg text-slate-600 dark:text-slate-400 mb-10">
-                            Disponible para iOS y Android. Descarga ahora y empieza a estar informado sobre
+                            Disponible para Android. Descarga ahora y empieza a estar informado sobre
                             los apagones en tu área.
                         </p>
                         <div className="flex gap-5 justify-center flex-wrap">
@@ -154,16 +154,8 @@ export const LandingSite = () => {
                                className="inline-flex items-center gap-3 px-8 py-4 bg-slate-800 dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500 text-white dark:text-slate-900 rounded-xl font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 dark:font-bold">
                                 <span className="text-2xl">📱</span>
                                 <div className="text-left">
-                                    <div className="text-xs opacity-80">Descargar en</div>
-                                    <div>App Store</div>
-                                </div>
-                            </a>
-                            <a href={downloadLink} target="_blank" rel="noopener noreferrer"
-                                className="inline-flex items-center gap-3 px-8 py-4 bg-slate-800 dark:bg-gradient-to-r dark:from-amber-400 dark:to-orange-500 text-white dark:text-slate-900 rounded-xl font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 dark:font-bold">
-                                <span className="text-2xl">🤖</span>
-                                <div className="text-left">
-                                    <div className="text-xs opacity-80">Disponible en</div>
-                                    <div>Google Play</div>
+                                    <div className="text-xs opacity-80">Descarga</div>
+                                    <div>Directa</div>
                                 </div>
                             </a>
                         </div>
