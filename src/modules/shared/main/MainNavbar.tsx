@@ -94,7 +94,7 @@ export const MainNavbar = () => {
                                     {current && (
                                         <div className="px-4 py-3 border-b border-gray-200">
                                             <p className="font-bold text-gray-900 text-sm text-center">
-                                                {current.info?.name || current.username || 'Usuario'}
+                                                {current.username || 'Usuario'}
                                             </p>
                                         </div>
                                     )}

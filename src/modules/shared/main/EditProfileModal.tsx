@@ -8,6 +8,7 @@ import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {useAuthContext} from "../../../contexts/AuthContext.tsx";
 
+
 const schema = yup.object({
     username: yup.string().required('El nombre de usuario es requerido'),
     email: yup.string().required('El email es requerido').email('Debe ser un email válido'),
@@ -28,7 +29,7 @@ interface EditProfileModalProps {
 }
 
 export const EditProfileModal = ({isOpen, onClose}: EditProfileModalProps) => {
-    const {current} = useAuthContext();
+    const { setCurrent } = useAuthContext();
     const {
         register,
         handleSubmit,
@@ -40,21 +41,38 @@ export const EditProfileModal = ({isOpen, onClose}: EditProfileModalProps) => {
     });
 
     useEffect(() => {
-        if (isOpen && current) {
-            reset({
-                username: current.username || '',
-                email: current.email || '',
-                firstname: current.info?.firstname || '',
-                lastname: current.info?.lastname || ''
-            });
-        }
-    }, [isOpen, current, reset]);
+        const load = async () => {
+            if (isOpen) {
+                try {
+                    const user = await UserService.instance.current();
+
+                    reset({
+                        username: user.username || '',
+                        email: user.email || '',
+                        firstname: user.firstName || '',
+                        lastname: user.lastName || ''
+                    });
+                } catch (e) {
+                    toast.error("No se pudo cargar la información del usuario.");
+                }
+            }
+        };
+
+        load();
+    }, [isOpen, reset]);
+
 
     if (!isOpen) return null;
 
     const onSubmit = async (data: EditProfileForm) => {
         try {
             await UserService.instance.updateProfile(data);
+
+            const refreshed = await UserService.instance.current();
+
+            setCurrent?.(refreshed);
+
+
             toast.success('Perfil actualizado correctamente');
             onClose();
         } catch (error: any) {
